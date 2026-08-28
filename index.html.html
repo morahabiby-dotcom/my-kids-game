@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>No. 1 Car Spotter Challenge</title>
+<style>
+  :root{
+    --road:#2E86AB;
+    --road-dark:#1F5F7A;
+    --sun:#f2a541;
+    --clay:#c96a3f;
+    --sky:#eaf4fa;
+    --cream:#fffaf0;
+    --ink:#1c2b33;
+    --card:#ffffff;
+    --purple:#7B4FA0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Trebuchet MS', 'Segoe UI', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #dcecf7 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #fdf0dd 0%, transparent 50%),
+      var(--sky);
+    color:var(--ink);
+    min-height:100vh;
+    padding:18px;
+  }
+  .wrap{max-width:780px;margin:0 auto;}
+  header{text-align:center;margin-bottom:14px;}
+  header h1{font-size:1.7rem;margin:0;color:var(--road-dark);letter-spacing:0.5px;}
+  header p{margin:4px 0 0;color:#4a6b7a;font-size:0.95rem;}
+
+  .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{
+    border:none;background:var(--card);color:var(--road-dark);
+    padding:9px 16px;border-radius:999px;font-weight:bold;font-size:0.85rem;
+    cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.08);transition:transform .15s;
+  }
+  .tab-btn.active{background:var(--road);color:white;transform:translateY(-2px);}
+  .tab-btn:hover{transform:translateY(-2px);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .card{
+    background:var(--card);border-radius:16px;padding:18px;
+    box-shadow:0 4px 14px rgba(30,60,80,0.12);margin-bottom:16px;
+  }
+  .score-row{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:10px;font-size:0.9rem;color:var(--road-dark);font-weight:bold;
+  }
+  .score-pill{background:var(--sun);color:#5a3600;padding:4px 12px;border-radius:999px;font-size:0.85rem;}
+
+  /* ---- Game 1: Sentence sort ---- */
+  #sentBank{
+    display:flex;flex-direction:column;gap:8px;
+    padding:10px;background:var(--cream);border-radius:12px;
+    margin-bottom:14px;border:2px dashed #e0c9a0;min-height:60px;
+  }
+  .sent-tile{
+    background:var(--road);color:white;padding:9px 14px;border-radius:10px;
+    font-size:0.92rem;font-weight:bold;cursor:grab;user-select:none;
+    box-shadow:0 2px 0 rgba(0,0,0,0.15);
+  }
+  .sent-tile.placed{opacity:0.3;cursor:default;box-shadow:none;}
+  .sent-tile.wrong-shake{animation:shake .4s;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    75%{transform:translateX(6px);}
+  }
+  .sent-bins{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .sbin{min-height:100px;border-radius:12px;padding:10px;border:3px solid transparent;}
+  .sbin h3{margin:0 0 4px;font-size:0.9rem;text-align:center;}
+  .sbin.statement{background:#e7f2ff;border-color:#a9cdf2;}
+  .sbin.question{background:#fff0e3;border-color:#f2c79a;}
+  .sbin.command{background:#f3e8ff;border-color:#d3aef2;}
+  .sbin.exclamation{background:#ffe3e3;border-color:#f2a9a9;}
+  .sbin.dragover{border-style:dashed;transform:scale(1.02);}
+  .sbin .dropped{
+    background:rgba(255,255,255,0.9);padding:5px 8px;border-radius:8px;
+    font-size:0.8rem;font-weight:bold;margin-top:4px;
+  }
+  @media (max-width:520px){ .sent-bins{grid-template-columns:1fr;} }
+
+  /* ---- Game 2: Odd one out ---- */
+  .phonics-q{
+    background:var(--cream);border-radius:12px;padding:16px;margin-bottom:14px;
+    text-align:center;
+  }
+  .phonics-q .words{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+  .word-btn{
+    padding:10px 18px;border-radius:10px;border:2px solid var(--road);
+    background:white;color:var(--road-dark);font-weight:bold;font-size:1rem;cursor:pointer;
+  }
+  .word-btn.correct{background:#d9f0d0;border-color:#4a9e6b;color:#2b5f2b;}
+  .word-btn.incorrect{background:#fbe0e0;border-color:var(--clay);color:#7a2020;}
+  .phonics-feedback{text-align:center;font-weight:bold;min-height:24px;margin-top:8px;}
+  .phonics-feedback.correct{color:#2b5f2b;}
+  .phonics-feedback.incorrect{color:var(--clay);}
+
+  /* ---- Game 3: Word meaning match ---- */
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .match-col h4{text-align:center;color:var(--road-dark);margin:0 0 8px;}
+  .match-item{
+    background:var(--cream);border:2px solid #e0c9a0;padding:9px;border-radius:10px;
+    margin-bottom:8px;text-align:center;font-weight:bold;cursor:pointer;
+    font-size:0.85rem;user-select:none;
+  }
+  .match-item.selected{background:var(--sun);border-color:#c97f1a;}
+  .match-item.matched{background:#d9f0d0;border-color:#4a9e6b;color:#2b5f2b;cursor:default;}
+  .match-item.shake{animation:shake .4s;}
+
+  .win-banner{
+    display:none;text-align:center;background:linear-gradient(135deg,#fff6df,#ffe9c2);
+    border-radius:14px;padding:16px;margin-top:14px;font-weight:bold;color:#7a4a00;
+    border:2px solid var(--sun);
+  }
+  .reset-btn{
+    display:block;margin:10px auto 0;padding:7px 18px;background:var(--road);
+    color:white;border:none;border-radius:999px;font-weight:bold;cursor:pointer;font-size:0.85rem;
+  }
+  .next-btn{
+    display:block;margin:14px auto 0;padding:9px 22px;background:var(--road-dark);
+    color:white;border:none;border-radius:999px;font-weight:bold;cursor:pointer;
+  }
+  footer{text-align:center;font-size:0.75rem;color:#7a94a3;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🚗 No. 1 Car Spotter Challenge</h1>
+    <p>Sentence types, spelling patterns &amp; word meanings — Unit 1</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="sent">🛣️ Sentence Sort</button>
+    <button class="tab-btn" data-tab="phon">🔊 Odd One Out</button>
+    <button class="tab-btn" data-tab="vocab">📖 Word Match</button>
+  </div>
+
+  <!-- GAME 1: SENTENCE TYPE SORT -->
+  <div class="panel active" id="panel-sent">
+    <div class="card">
+      <div class="score-row">
+        <span>Drag each sentence into the right garage</span>
+        <span class="score-pill" id="sentScore">0 / 8</span>
+      </div>
+      <div id="sentBank"></div>
+      <div class="sent-bins">
+        <div class="sbin statement" data-type="statement"><h3>🚙 Statement ( . )</h3></div>
+        <div class="sbin question" data-type="question"><h3>❓ Question ( ? )</h3></div>
+        <div class="sbin command" data-type="command"><h3>👉 Command ( . / ! )</h3></div>
+        <div class="sbin exclamation" data-type="exclamation"><h3>❗ Exclamation ( ! )</h3></div>
+      </div>
+      <div class="win-banner" id="sentWin">🎉 Fantastic! Every sentence parked correctly!</div>
+      <button class="reset-btn" onclick="initSent()">Play again</button>
+    </div>
+  </div>
+
+  <!-- GAME 2: ODD ONE OUT (PHONICS) -->
+  <div class="panel" id="panel-phon">
+    <div class="card">
+      <div class="score-row">
+        <span>Tap the word where the red letters sound different</span>
+        <span class="score-pill" id="phonScore">Score: 0</span>
+      </div>
+      <div class="phonics-q" id="phonQ"></div>
+      <div class="phonics-feedback" id="phonFeedback"></div>
+      <button class="next-btn" id="phonNextBtn" style="display:none" onclick="nextPhon()">Next →</button>
+    </div>
+  </div>
+
+  <!-- GAME 3: WORD MEANING MATCH -->
+  <div class="panel" id="panel-vocab">
+    <div class="card">
+      <div class="score-row">
+        <span>Tap a word, then tap its meaning</span>
+        <span class="score-pill" id="vocabScore">0 / 6 pairs</span>
+      </div>
+      <div class="match-grid">
+        <div class="match-col"><h4>Word</h4><div id="vocabLeft"></div></div>
+        <div class="match-col"><h4>Meaning</h4><div id="vocabRight"></div></div>
+      </div>
+      <div class="win-banner" id="vocabWin">🌟 Excellent! You matched every word!</div>
+      <button class="reset-btn" onclick="initVocab()">Play again</button>
+    </div>
+  </div>
+
+  <footer>Based on "The No. 1 Car Spotter" by Atinuke · Unit 1: Fiction</footer>
+</div>
+
+<script>
+/* ---------- TAB SWITCHING ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ================= GAME 1: SENTENCE TYPE SORT ================= */
+const sentItems = [
+  {s:'No. 1 likes to spot cars.', t:'statement'},
+  {s:'My name is Oluwalase.', t:'statement'},
+  {s:'Where does No. 1 live?', t:'question'},
+  {s:'What is No. 1\'s hobby?', t:'question'},
+  {s:'Look at that car.', t:'command'},
+  {s:'Spot the Firebird!', t:'command'},
+  {s:'What an amazing car!', t:'exclamation'},
+  {s:'What a lot of cars!', t:'exclamation'},
+];
+let sentState = {};
+
+function initSent(){
+  sentState = {correct:0};
+  document.getElementById('sentWin').style.display='none';
+  const bank = document.getElementById('sentBank');
+  bank.innerHTML='';
+  document.querySelectorAll('.sbin').forEach(b=>{
+    b.querySelectorAll('.dropped').forEach(d=>d.remove());
+  });
+  updateSentScore();
+  const items = shuffle(sentItems);
+  items.forEach((item,idx)=>{
+    const tile = document.createElement('div');
+    tile.className='sent-tile';
+    tile.textContent = item.s;
+    tile.draggable = true;
+    tile.id = 'sent-'+idx;
+    tile.dataset.type = item.t;
+    tile.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('text/plain', tile.id);
+    });
+    bank.appendChild(tile);
+  });
+}
+
+document.querySelectorAll('.sbin').forEach(bin=>{
+  bin.addEventListener('dragover', e=>{ e.preventDefault(); bin.classList.add('dragover'); });
+  bin.addEventListener('dragleave', ()=> bin.classList.remove('dragover'));
+  bin.addEventListener('drop', e=>{
+    e.preventDefault();
+    bin.classList.remove('dragover');
+    const id = e.dataTransfer.getData('text/plain');
+    const tile = document.getElementById(id);
+    if(!tile || tile.classList.contains('placed')) return;
+    handleSentDrop(tile, bin);
+  });
+  bin.addEventListener('click', ()=>{
+    if(window.__selectedSent){
+      handleSentDrop(window.__selectedSent, bin);
+      window.__selectedSent.style.outline='';
+      window.__selectedSent=null;
+    }
+  });
+});
+
+document.getElementById('sentBank').addEventListener('click', e=>{
+  const tile = e.target.closest('.sent-tile');
+  if(!tile || tile.classList.contains('placed')) return;
+  window.__selectedSent = tile;
+  document.querySelectorAll('.sent-tile').forEach(t=>t.style.outline='');
+  tile.style.outline = '3px solid #f2a541';
+});
+
+function handleSentDrop(tile, bin){
+  if(tile.dataset.type === bin.dataset.type){
+    tile.classList.add('placed');
+    tile.draggable = false;
+    const label = document.createElement('div');
+    label.className='dropped';
+    label.textContent = tile.textContent;
+    bin.appendChild(label);
+    sentState.correct++;
+    updateSentScore();
+    if(sentState.correct === sentItems.length){
+      document.getElementById('sentWin').style.display='block';
+    }
+  } else {
+    tile.classList.add('wrong-shake');
+    setTimeout(()=>tile.classList.remove('wrong-shake'), 400);
+  }
+}
+
+function updateSentScore(){
+  document.getElementById('sentScore').textContent = sentState.correct + ' / ' + sentItems.length;
+}
+initSent();
+
+/* ================= GAME 2: ODD ONE OUT (PHONICS) ================= */
+const phonQuestions = [
+  {words:['cars','centre','city'], odd:'cars', hint:'c'},
+  {words:['yams','Easy','hobby'], odd:'yams', hint:'y'},
+  {words:['goat','grass','Emergency'], odd:'Emergency', hint:'g'},
+  {words:['who','while','when'], odd:'who', hint:'wh'},
+  {words:['should','shout','compound'], odd:'compound', hint:'ou'},
+  {words:['nut','work','engine'], odd:'work', hint:'u'},
+  {words:['Mercedes','spot','station'], odd:'station', hint:'s'},
+  {words:['jar','know','could'], odd:'jar', hint:'silent letters'},
+];
+let phonOrder = [];
+let phonIdx = 0;
+let phonScore = 0;
+let phonAnswered = false;
+
+function initPhon(){
+  phonOrder = shuffle(phonQuestions);
+  phonIdx = 0;
+  phonScore = 0;
+  document.getElementById('phonScore').textContent = 'Score: 0';
+  showPhon();
+}
+
+function showPhon(){
+  phonAnswered = false;
+  document.getElementById('phonFeedback').textContent='';
+  document.getElementById('phonFeedback').className='phonics-feedback';
+  document.getElementById('phonNextBtn').style.display='none';
+  const q = document.getElementById('phonQ');
+  if(phonIdx >= phonOrder.length){
+    q.innerHTML = '🎉 Finished! Final score: '+phonScore+' / '+phonOrder.length;
+    return;
+  }
+  const item = phonOrder[phonIdx];
+  let html = '<div style="font-size:0.9rem;color:#4a6b7a;margin-bottom:6px;">Which word sounds different?</div>';
+  html += '<div class="words">';
+  item.words.forEach(w=>{
+    html += `<button class="word-btn" onclick="answerPhon(this,'${w.replace(/'/g,"\\'")}')">${w}</button>`;
+  });
+  html += '</div>';
+  q.innerHTML = html;
+}
+
+function answerPhon(btn, word){
+  if(phonAnswered) return;
+  phonAnswered = true;
+  const item = phonOrder[phonIdx];
+  const correct = word === item.odd;
+  const fb = document.getElementById('phonFeedback');
+  document.querySelectorAll('.word-btn').forEach(b=>{
+    if(b.textContent === item.odd) b.classList.add('correct');
+  });
+  if(correct){
+    phonScore++;
+    fb.textContent = '✅ Correct! Well spotted.';
+    fb.className='phonics-feedback correct';
+  } else {
+    btn.classList.add('incorrect');
+    fb.textContent = '❌ Not quite — "'+item.odd+'" is the odd one out.';
+    fb.className='phonics-feedback incorrect';
+  }
+  document.getElementById('phonScore').textContent = 'Score: '+phonScore;
+  document.getElementById('phonNextBtn').style.display='block';
+}
+
+function nextPhon(){
+  phonIdx++;
+  showPhon();
+}
+initPhon();
+
+/* ================= GAME 3: WORD MEANING MATCH ================= */
+const vocabPairs = [
+  {w:'hobby', m:'an activity done for fun'},
+  {w:'banned', m:'forbidden'},
+  {w:'compound', m:'a group of houses protected by a fence'},
+  {w:'obey', m:'to carry out instructions'},
+  {w:'directly', m:'right in front'},
+  {w:'car spotter', m:'a person who looks out for different cars'}
+];
+let vocabState = {};
+
+function initVocab(){
+  vocabState = {selectedLeft:null, matched:0};
+  document.getElementById('vocabWin').style.display='none';
+  document.getElementById('vocabScore').textContent = '0 / '+vocabPairs.length+' pairs';
+  const left = shuffle(vocabPairs.map(p=>p.w));
+  const right = shuffle(vocabPairs.map(p=>p.m));
+  const leftEl = document.getElementById('vocabLeft');
+  const rightEl = document.getElementById('vocabRight');
+  leftEl.innerHTML=''; rightEl.innerHTML='';
+  left.forEach(w=>{
+    const d = document.createElement('div');
+    d.className='match-item';
+    d.textContent = w;
+    d.dataset.word = w;
+    d.dataset.side='left';
+    d.addEventListener('click', ()=>selectVocab(d));
+    leftEl.appendChild(d);
+  });
+  right.forEach(m=>{
+    const d = document.createElement('div');
+    d.className='match-item';
+    d.textContent = m;
+    d.dataset.word = m;
+    d.dataset.side='right';
+    d.addEventListener('click', ()=>selectVocab(d));
+    rightEl.appendChild(d);
+  });
+}
+
+function pairOfVocab(word){
+  return vocabPairs.find(p=>p.w===word || p.m===word);
+}
+
+function selectVocab(el){
+  if(el.classList.contains('matched')) return;
+  if(el.dataset.side==='left'){
+    document.querySelectorAll('.match-item[data-side="left"]').forEach(i=>i.classList.remove('selected'));
+    el.classList.add('selected');
+    vocabState.selectedLeft = el;
+  } else {
+    if(!vocabState.selectedLeft) return;
+    const leftWord = vocabState.selectedLeft.dataset.word;
+    const rightWord = el.dataset.word;
+    const pair = pairOfVocab(leftWord);
+    if(pair && pair.m === rightWord){
+      vocabState.selectedLeft.classList.remove('selected');
+      vocabState.selectedLeft.classList.add('matched');
+      el.classList.add('matched');
+      vocabState.selectedLeft = null;
+      vocabState.matched++;
+      document.getElementById('vocabScore').textContent = vocabState.matched+' / '+vocabPairs.length+' pairs';
+      if(vocabState.matched === vocabPairs.length){
+        document.getElementById('vocabWin').style.display='block';
+      }
+    } else {
+      el.classList.add('shake');
+      vocabState.selectedLeft.classList.add('shake');
+      setTimeout(()=>{
+        el.classList.remove('shake');
+        vocabState.selectedLeft && vocabState.selectedLeft.classList.remove('shake','selected');
+        vocabState.selectedLeft = null;
+      }, 400);
+    }
+  }
+}
+initVocab();
+</script>
+</body>
+</html>
