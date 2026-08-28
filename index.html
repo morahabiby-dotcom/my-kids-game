@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spot the Stolen Cars! — Noun Phrase Game</title>
+<title>Atinuke Book Club — Theme &amp; Character Challenge</title>
 <style>
   :root{
-    --navy:#0e1630;
-    --navy2:#182552;
-    --dock:#2f3a4d;
-    --orange:#f2811b;
-    --orange-dark:#c96410;
-    --yellow:#ffce54;
-    --red:#e0483e;
-    --green:#38b06a;
+    --wood:#5b3a29;
+    --wood-dark:#3e271b;
     --cream:#fff8ec;
-    --line:#4a5482;
+    --orange:#e8770f;
+    --orange-dark:#bd5e0c;
+    --teal:#1f8a83;
+    --pink:#c9436b;
+    --gold:#e8b64a;
+    --ink:#2a2320;
+    --line:#c8a97e;
   }
   *{box-sizing:border-box;}
   html,body{
     margin:0; padding:0; min-height:100%;
     font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 60%, var(--dock) 100%);
+    background: linear-gradient(180deg, var(--wood) 0%, var(--wood-dark) 100%);
     color:var(--cream);
   }
   .wrap{
@@ -30,95 +30,78 @@
     padding:18px 16px 40px;
   }
   h1{
-    font-size:clamp(21px,5vw,30px);
-    margin:4px 0 2px; text-align:center; color:var(--yellow);
+    font-size:clamp(20px,5vw,28px); margin:4px 0 2px; text-align:center; color:var(--gold);
     text-shadow:2px 2px 0 rgba(0,0,0,0.35);
   }
-  .subtitle{ color:#cfd4ea; font-size:14px; margin-bottom:14px; text-align:center; }
+  .subtitle{ color:#ecdcc4; font-size:14px; margin-bottom:14px; text-align:center; }
 
   .hud{
     width:100%; display:flex; justify-content:space-between; align-items:center;
-    background:rgba(255,255,255,0.06); border:2px solid var(--line); border-radius:14px;
+    background:rgba(255,255,255,0.08); border:2px solid var(--line); border-radius:14px;
     padding:10px 16px; margin-bottom:14px; font-weight:600;
   }
-  .hud div{ font-size:14px; }
-  .hud .score{ color:var(--yellow); }
-  .hud .streak{ color:var(--green); }
-  .hud .lives{ color:var(--red); font-size:18px; letter-spacing:2px; }
+  .hud .score{ color:var(--gold); font-size:14px; }
+  .hud .badges{ font-size:16px; letter-spacing:2px; }
 
   .progress-bar{ width:100%; height:8px; background:rgba(255,255,255,0.15); border-radius:6px; overflow:hidden; margin-bottom:16px; }
-  .progress-fill{ height:100%; background:linear-gradient(90deg,var(--orange),var(--yellow)); width:0%; transition:width .4s ease; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg,var(--orange),var(--gold)); width:0%; transition:width .4s ease; }
 
-  /* Port scene */
-  .scene{
-    position:relative; width:100%; height:130px; border-radius:16px; overflow:hidden;
-    margin-bottom:18px; border:3px solid #0a0e1c;
-    background: linear-gradient(180deg,#4b6fa0 0%, #7fa3cc 40%, #33404f 40%, #232d38 100%);
+  /* Bookshelf scene */
+  .shelf{
+    position:relative; width:100%; height:110px; border-radius:14px; overflow:hidden;
+    margin-bottom:18px; border:3px solid var(--wood-dark);
+    background: repeating-linear-gradient(180deg, #8a5a3c 0 8px, #7a4d33 8px 92px);
+    display:flex; align-items:flex-end; justify-content:center; gap:6px; padding:0 10px 10px;
   }
-  .ship{
-    position:absolute; bottom:14px; font-size:52px;
-    filter:drop-shadow(2px 3px 3px rgba(0,0,0,0.4));
+  .book{
+    width:26px; height:70px; border-radius:3px 3px 0 0;
+    display:flex; align-items:flex-end; justify-content:center;
+    font-size:10px; font-weight:800; color:white; padding-bottom:4px;
+    box-shadow: inset -3px 0 0 rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
   }
-  .ship1{ left:6%; }
-  .ship2{ left:38%; font-size:44px; opacity:0.85;}
-  .ship3{ right:6%; font-size:46px; opacity:0.9;}
-  .car-icon{
-    position:absolute; bottom:8px; font-size:26px;
-    transition: opacity 0.3s ease;
-  }
+  .book.lit{ transform: translateY(-8px); box-shadow: 0 0 0 3px var(--gold); }
   .status-msg{
     position:absolute; top:8px; left:50%; transform:translateX(-50%);
     background:rgba(0,0,0,0.55); padding:4px 12px; border-radius:20px;
-    font-size:12px; font-weight:700; color:var(--yellow); white-space:nowrap;
+    font-size:12px; font-weight:700; color:var(--gold); white-space:nowrap;
   }
 
-  /* card */
   .card{
-    width:100%; background:var(--cream); color:#26293a; border-radius:18px;
-    padding:22px 20px 18px; box-shadow:0 10px 0 rgba(0,0,0,0.25); position:relative;
+    width:100%; background:var(--cream); color:var(--ink); border-radius:18px;
+    padding:22px 20px 18px; box-shadow:0 10px 0 rgba(0,0,0,0.3); position:relative;
   }
   .prompt-label{
     font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
     color:var(--orange-dark); margin-bottom:8px;
   }
-  .task-desc{ font-size:14px; color:#5a5f74; margin-bottom:14px; }
-  .phrase-build-row{
-    display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:16px;
-  }
-  .slot{
-    min-width:88px; min-height:46px; border:3px dashed #cfd3e0; border-radius:10px;
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px;
-    background:#f2f4fa; padding:4px 8px; color:#26293a;
-  }
-  .slot.filled{ border-style:solid; border-color:var(--orange); background:#fff2e0; }
-  .word-bank{
-    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px;
-  }
-  .word-chip{
-    background:white; border:3px solid #dcdfe8; border-radius:24px; padding:9px 16px;
-    font-weight:700; font-size:15px; cursor:pointer; transition:all .15s ease; color:#26293a;
-  }
-  .word-chip:hover:not(.used){ border-color:var(--orange); transform:translateY(-2px); }
-  .word-chip.used{ opacity:0.3; cursor:default; }
-  .word-chip.adj{ color:var(--orange-dark); }
-  .word-chip.noun{ color:#1b6fa8; }
+  .question{ font-size:clamp(18px,5vw,21px); font-weight:800; margin-bottom:14px; line-height:1.35; }
+  .hint-text{ font-size:13px; color:#6b6156; font-style:italic; margin-bottom:12px; }
 
-  .mc-question{ font-size:clamp(18px,5vw,22px); font-weight:800; margin-bottom:14px; line-height:1.3; }
-  .mc-question .hl{ color:var(--orange-dark); }
   .options{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   @media (max-width:420px){ .options{ grid-template-columns:1fr; } }
   .opt{
-    background:white; border:3px solid #dcdfe8; border-radius:12px; padding:13px 10px;
-    font-size:15.5px; font-weight:700; cursor:pointer; color:#26293a; transition:all .15s ease;
+    background:white; border:3px solid #e4d9c8; border-radius:12px; padding:13px 10px;
+    font-size:15px; font-weight:700; cursor:pointer; color:var(--ink); transition:all .15s ease;
   }
   .opt:hover:not(:disabled){ border-color:var(--orange); transform:translateY(-2px); }
   .opt:disabled{ cursor:default; }
-  .opt.correct{ background:var(--green); border-color:var(--green); color:white; }
-  .opt.wrong{ background:var(--red); border-color:var(--red); color:white; }
+  .opt.correct{ background:var(--teal); border-color:var(--teal); color:white; }
+  .opt.wrong{ background:var(--pink); border-color:var(--pink); color:white; }
+
+  .multi-note{ font-size:12.5px; color:#6b6156; margin-bottom:10px; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .chip{
+    background:white; border:3px solid #e4d9c8; border-radius:24px; padding:9px 16px;
+    font-weight:700; font-size:14.5px; cursor:pointer; color:var(--ink); transition:all .15s ease;
+  }
+  .chip.selected{ background:var(--gold); border-color:var(--orange-dark); }
+  .chip.locked-correct{ background:var(--teal); color:white; border-color:var(--teal); }
+  .chip.locked-wrong{ background:var(--pink); color:white; border-color:var(--pink); }
 
   .feedback{ min-height:24px; margin-top:10px; font-weight:700; font-size:14px; text-align:center; }
-  .feedback.good{ color:#1b8a4f; }
-  .feedback.bad{ color:#c23a30; }
+  .feedback.good{ color:#12695f; }
+  .feedback.bad{ color:#a12d4a; }
 
   .action-btn{
     display:block; margin:14px auto 0; background:var(--orange); color:white; border:none;
@@ -126,91 +109,105 @@
     box-shadow:0 4px 0 var(--orange-dark);
   }
   .action-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 var(--orange-dark); }
-  .action-btn:disabled{ opacity:0.4; cursor:default; }
 
   .end-screen{
-    width:100%; background:var(--cream); color:#26293a; border-radius:18px; padding:34px 22px;
-    text-align:center; box-shadow:0 10px 0 rgba(0,0,0,0.25);
+    width:100%; background:var(--cream); color:var(--ink); border-radius:18px; padding:34px 22px;
+    text-align:center; box-shadow:0 10px 0 rgba(0,0,0,0.3);
   }
   .end-screen h2{ margin-top:0; font-size:24px; color:var(--orange-dark); }
   .end-emoji{ font-size:56px; margin-bottom:6px; }
   .end-stats{ font-size:16px; margin:14px 0 20px; line-height:1.7; }
   .end-stats b{ color:var(--orange-dark); }
   .restart-btn{
-    background:var(--navy); color:var(--yellow); border:none; border-radius:30px;
+    background:var(--wood-dark); color:var(--gold); border:none; border-radius:30px;
     padding:12px 30px; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 0 #000;
   }
   .restart-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 #000; }
 
-  footer{ margin-top:22px; font-size:12px; color:#8890ab; text-align:center; }
+  footer{ margin-top:22px; font-size:12px; color:#c9b89a; text-align:center; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🚨 Spot the Stolen Cars!</h1>
-  <div class="subtitle">Help No. 1 build noun phrases and spot the getaway cars before the ship sails.</div>
+  <h1>📚 Atinuke Book Club Challenge</h1>
+  <div class="subtitle">Test what you know about themes, characters and books by Atinuke.</div>
 
   <div class="hud">
     <div class="score">⭐ Score: <span id="scoreVal">0</span></div>
-    <div class="streak">🔥 Streak: <span id="streakVal">0</span></div>
-    <div class="lives" id="livesVal">❤❤❤</div>
+    <div class="badges" id="badgesVal">📖📖📖📖📖📖📖📖</div>
   </div>
 
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-  <div class="scene">
-    <div class="status-msg" id="statusMsg">Watching the port...</div>
-    <div class="ship ship2">🚢</div>
-    <div class="ship ship1">🛳️</div>
-    <div class="ship ship3">🚢</div>
-    <div class="car-icon" id="spottedCar" style="left:45%; opacity:0;">🚗</div>
+  <div class="shelf" id="shelf">
+    <div class="status-msg" id="statusMsg">Welcome to book club!</div>
   </div>
 
   <div id="gameArea"></div>
 
-  <footer>Based on "No. 1 and the Police Chief" — Unit 1: Fiction, noun phrase practice.</footer>
+  <footer>Based on "Atinuke Book Club" — Unit 1: Fiction, theme &amp; character review.</footer>
 </div>
 
 <script>
-// ---------- Round data ----------
-// type "build": drag/click words in order (adjective[, adjective], noun) to build a phrase matching the target meaning
-// type "mc": pick the correct noun phrase / adjective+noun combo for a description
+const bookColors = ['#c9436b','#1f8a83','#e8770f','#4a6fa5','#8a5a3c','#7a4d33','#b8763f','#5b8c5a'];
 
-const rounds = [
-  { type:"build", target:"a car that has been stolen", adjOptions:["stolen","rusty","tiny"], noun:"cars", correctAdjs:["stolen"] },
-  { type:"build", target:"a ship that is big and orange", adjOptions:["orange","big","quiet"], noun:"ship", correctAdjs:["big","orange"] },
-  { type:"build", target:"a Firebird that is red", adjOptions:["red","broken","sleepy"], noun:"Firebird", correctAdjs:["red"] },
-  { type:"build", target:"a lorry that is broken", adjOptions:["broken","yellow","loud"], noun:"lorry", correctAdjs:["broken"] },
-  { type:"mc", question:"Which is a correct noun phrase describing a car in the story?",
-    options:["stolen cars","cars stolen the","the of cars stolen"], correct:"stolen cars" },
-  { type:"mc", question:"Which noun phrase has TWO adjectives?",
-    options:["big orange ship","fast car","the ship"], correct:"big orange ship" },
-  { type:"mc", question:"In 'a yellow Porsche 911', which word is the noun (the main thing being described)?",
-    options:["Porsche 911","yellow","a"], correct:"Porsche 911" },
-  { type:"mc", question:"Which word tells you the police are trying to stay hidden?",
-    options:["crouching","shouting","driving"], correct:"crouching" },
-  { type:"mc", question:"Which word means 'stops for a moment because he is not sure'?",
-    options:["hesitates","scatter","squats"], correct:"hesitates" },
-  { type:"mc", question:"This story has clues, a crime and a chief who solves it. What genre is it?",
-    options:["detective / mystery","myth","fantasy"], correct:"detective / mystery" }
+const questions = [
+  { type:"mc",
+    question:"Which theme appears in the extract from 'Too Small Tola'?",
+    options:["hard work","picking palm nuts","going to school"],
+    correct:"hard work" },
+  { type:"mc",
+    question:"What job do Tola and Dapo do to help Mr Abdul?",
+    options:["They cycle to customers and take measurements.","They cook food for the festival.","They build a new house."],
+    correct:"They cycle to customers and take measurements." },
+  { type:"mc",
+    question:"Why does Tola feel nervous while customers try on outfits?",
+    options:["She worries the outfits might not fit.","She is cold.","She does not like sewing."],
+    correct:"She worries the outfits might not fit." },
+  { type:"mc",
+    question:"Why does Mr Abdul charge the large, fancy woman more money?",
+    options:["Because she was rude to Tola and Dapo.","Because her outfit used more fabric.","Because she asked for a discount."],
+    correct:"Because she was rude to Tola and Dapo." },
+  { type:"mc",
+    question:"Atinuke says Dapo's calf muscles are 'as big as the pillars holding up the Third Mainland Bridge.' What is this an example of?",
+    options:["exaggeration to show how strong he is","a literal, factual description","a joke about bridges"],
+    correct:"exaggeration to show how strong he is" },
+  { type:"multi",
+    question:"Which of these are themes found across Atinuke's stories? Select ALL that apply.",
+    hint:"Think about family, helping others and hard work across her books.",
+    options:["family","helping others","hard work","cars","picking palm nuts"],
+    correct:["family","helping others","hard work"] },
+  { type:"mc",
+    question:"How are Tola, No. 1 and Anna Hibiscus most similar?",
+    options:["They like to help people.","They live in a village.","They like cars."],
+    correct:"They like to help people." },
+  { type:"mc",
+    question:"What do we use to help choose a book to read, alongside the cover?",
+    options:["the blurb","the price sticker","the page count"],
+    correct:"the blurb" },
+  { type:"mc",
+    question:"When we have a book club discussion, what should we do?",
+    options:["Respond to what others say and be polite.","Talk over other learners quickly.","Only share our own opinion."],
+    correct:"Respond to what others say and be polite." },
+  { type:"mc",
+    question:"A good book review should explain part of the plot — but how much?",
+    options:["Part of it, not all of it.","All of the ending.","None of the plot at all."],
+    correct:"Part of it, not all of it." }
 ];
 
-let order = [];
 let idx = 0;
 let score = 0;
-let streak = 0;
-let lives = 3;
-const TOTAL = rounds.length;
+let correctCount = 0;
+const TOTAL = questions.length;
 let answered = false;
-let buildState = { adjs:[], allAdjs:[] };
+let multiSelected = [];
 
 const gameArea = document.getElementById('gameArea');
 const scoreVal = document.getElementById('scoreVal');
-const streakVal = document.getElementById('streakVal');
-const livesVal = document.getElementById('livesVal');
+const badgesVal = document.getElementById('badgesVal');
 const progressFill = document.getElementById('progressFill');
 const statusMsg = document.getElementById('statusMsg');
-const spottedCar = document.getElementById('spottedCar');
+const shelf = document.getElementById('shelf');
 
 function shuffle(arr){
   const a = arr.slice();
@@ -221,116 +218,69 @@ function shuffle(arr){
   return a;
 }
 
-function updateHud(){
-  scoreVal.textContent = score;
-  streakVal.textContent = streak;
-  livesVal.textContent = '❤'.repeat(lives) + '🖤'.repeat(3-lives);
-  progressFill.style.width = (idx/TOTAL*100)+'%';
-}
-
-function flashCar(found){
-  spottedCar.style.opacity = found ? '1' : '0';
-  spottedCar.textContent = found ? '🚔' : '🚗';
-  spottedCar.style.left = (20 + Math.random()*55) + '%';
-  if(found){
-    setTimeout(()=>{ spottedCar.style.opacity='0'; }, 900);
+function buildShelf(){
+  // remove existing books
+  shelf.querySelectorAll('.book').forEach(b=>b.remove());
+  for(let i=0;i<TOTAL;i++){
+    const b = document.createElement('div');
+    b.className = 'book';
+    b.style.background = bookColors[i % bookColors.length];
+    b.id = 'book-'+i;
+    b.textContent = (i+1);
+    shelf.appendChild(b);
   }
 }
 
-function loadRound(){
-  if(idx >= TOTAL || lives <= 0){
+function updateHud(){
+  scoreVal.textContent = score;
+  let badges = '';
+  for(let i=0;i<TOTAL;i++){
+    badges += i < idx ? (i < correctCountAt(i) ? '📗' : '📕') : '📖';
+  }
+  progressFill.style.width = (idx/TOTAL*100)+'%';
+}
+
+// track correctness per question index for badge rendering
+let resultLog = [];
+function correctCountAt(i){ return resultLog[i] ? 1 : 0; }
+
+function refreshBadges(){
+  let out = '';
+  for(let i=0;i<TOTAL;i++){
+    if(i < resultLog.length){
+      out += resultLog[i] ? '📗' : '📕';
+    } else {
+      out += '📖';
+    }
+  }
+  badgesVal.textContent = out;
+}
+
+function loadQuestion(){
+  if(idx >= TOTAL){
     endGame();
     return;
   }
   answered = false;
-  const r = rounds[idx];
-  statusMsg.textContent = `Round ${idx+1} of ${TOTAL}`;
+  multiSelected = [];
+  const q = questions[idx];
+  statusMsg.textContent = `Book ${idx+1} of ${TOTAL}`;
 
-  if(r.type === "build"){
-    buildState = { adjs: [], allAdjs: shuffle(r.adjOptions) };
-    renderBuildRound(r);
+  if(q.type === "mc"){
+    renderMC(q);
   } else {
-    renderMCRound(r);
+    renderMulti(q);
   }
   updateHud();
+  refreshBadges();
 }
 
-function renderBuildRound(r){
-  const needed = r.correctAdjs.length;
+function renderMC(q){
+  const opts = shuffle(q.options);
   gameArea.innerHTML = `
     <div class="card">
-      <div class="prompt-label">Build the noun phrase</div>
-      <div class="task-desc">Tap the adjective(s) that describe: <b>${r.target}</b>. Then tap Check.</div>
-      <div class="phrase-build-row" id="slotsRow">
-        ${Array.from({length:needed}).map(()=>`<div class="slot"></div>`).join('')}
-        <div class="slot filled" style="background:#e9edf5;border-style:solid;border-color:#c7ccd9;">${r.noun}</div>
-      </div>
-      <div class="word-bank" id="wordBank">
-        ${buildState.allAdjs.map(a=>`<button class="word-chip adj" data-adj="${a}">${a}</button>`).join('')}
-      </div>
-      <button class="action-btn" id="checkBtn">Check phrase</button>
-      <div class="feedback" id="feedback"></div>
-    </div>
-  `;
-
-  document.querySelectorAll('.word-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      if(chip.classList.contains('used')) return;
-      if(buildState.adjs.length >= r.correctAdjs.length) return;
-      buildState.adjs.push(chip.getAttribute('data-adj'));
-      chip.classList.add('used');
-      renderSlots(r);
-    });
-  });
-  document.getElementById('checkBtn').addEventListener('click', ()=>checkBuild(r));
-}
-
-function renderSlots(r){
-  const slots = document.querySelectorAll('#slotsRow .slot');
-  buildState.adjs.forEach((a,i)=>{
-    if(slots[i]){
-      slots[i].textContent = a;
-      slots[i].classList.add('filled');
-    }
-  });
-}
-
-function checkBuild(r){
-  if(answered) return;
-  if(buildState.adjs.length < r.correctAdjs.length){
-    document.getElementById('feedback').textContent = "Choose the right number of adjectives first!";
-    document.getElementById('feedback').className = 'feedback bad';
-    return;
-  }
-  answered = true;
-  const chosenSet = new Set(buildState.adjs);
-  const correctSet = new Set(r.correctAdjs);
-  const isCorrect = chosenSet.size === correctSet.size && [...chosenSet].every(a => correctSet.has(a));
-  const feedback = document.getElementById('feedback');
-  document.getElementById('checkBtn').disabled = true;
-
-  if(isCorrect){
-    score += 10 + streak*2;
-    streak += 1;
-    feedback.textContent = `🚔 Spotted! "${r.correctAdjs.join(' ')} ${r.noun}" is correct.`;
-    feedback.className = 'feedback good';
-    flashCar(true);
-  } else {
-    streak = 0;
-    lives -= 1;
-    feedback.textContent = `Not quite — the phrase should be "${r.correctAdjs.join(' ')} ${r.noun}".`;
-    feedback.className = 'feedback bad';
-    flashCar(false);
-  }
-  finishRound();
-}
-
-function renderMCRound(r){
-  const opts = shuffle(r.options);
-  gameArea.innerHTML = `
-    <div class="card">
-      <div class="prompt-label">Spot the answer</div>
-      <div class="mc-question">${r.question}</div>
+      <div class="prompt-label">Book Club Question</div>
+      <div class="question">${q.question}</div>
       <div class="options" id="optionsWrap">
         ${opts.map(o=>`<button class="opt" data-val="${o.replace(/"/g,'&quot;')}">${o}</button>`).join('')}
       </div>
@@ -338,15 +288,15 @@ function renderMCRound(r){
     </div>
   `;
   document.querySelectorAll('.opt').forEach(btn=>{
-    btn.addEventListener('click', (e)=>onMCAnswer(e, r));
+    btn.addEventListener('click', (e)=>onMCAnswer(e, q));
   });
 }
 
-function onMCAnswer(e, r){
+function onMCAnswer(e, q){
   if(answered) return;
   answered = true;
   const chosen = e.target.getAttribute('data-val');
-  const correct = r.correct;
+  const correct = q.correct;
   const feedback = document.getElementById('feedback');
   document.querySelectorAll('.opt').forEach(btn=>{
     btn.disabled = true;
@@ -354,55 +304,116 @@ function onMCAnswer(e, r){
     else if(btn === e.target) btn.classList.add('wrong');
   });
 
-  if(chosen === correct){
-    score += 10 + streak*2;
-    streak += 1;
-    feedback.textContent = "🚔 Spotted! That's the one.";
-    feedback.className = 'feedback good';
-    flashCar(true);
-  } else {
-    streak = 0;
-    lives -= 1;
-    feedback.textContent = `Not quite — the answer was "${correct}".`;
-    feedback.className = 'feedback bad';
-    flashCar(false);
-  }
-  finishRound();
+  const isCorrect = chosen === correct;
+  handleResult(isCorrect, feedback, isCorrect ? "Great reading — that's right!" : `Not quite — the answer was "${correct}".`);
 }
 
-function finishRound(){
+function renderMulti(q){
+  gameArea.innerHTML = `
+    <div class="card">
+      <div class="prompt-label">Book Club Question</div>
+      <div class="question">${q.question}</div>
+      <div class="multi-note">${q.hint || 'Select all correct answers, then tap Check.'}</div>
+      <div class="chip-row" id="chipRow">
+        ${q.options.map(o=>`<button class="chip" data-val="${o.replace(/"/g,'&quot;')}">${o}</button>`).join('')}
+      </div>
+      <button class="action-btn" id="checkMultiBtn">Check answers</button>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  `;
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      if(answered) return;
+      const val = chip.getAttribute('data-val');
+      if(multiSelected.includes(val)){
+        multiSelected = multiSelected.filter(v=>v!==val);
+        chip.classList.remove('selected');
+      } else {
+        multiSelected.push(val);
+        chip.classList.add('selected');
+      }
+    });
+  });
+  document.getElementById('checkMultiBtn').addEventListener('click', ()=>checkMulti(q));
+}
+
+function checkMulti(q){
+  if(answered) return;
+  if(multiSelected.length === 0){
+    document.getElementById('feedback').textContent = "Select at least one option first!";
+    document.getElementById('feedback').className = 'feedback bad';
+    return;
+  }
+  answered = true;
+  document.getElementById('checkMultiBtn').disabled = true;
+  const correctSet = new Set(q.correct);
+  const chosenSet = new Set(multiSelected);
+  document.querySelectorAll('.chip').forEach(chip=>{
+    const val = chip.getAttribute('data-val');
+    chip.classList.remove('selected');
+    if(correctSet.has(val)) chip.classList.add('locked-correct');
+    else if(chosenSet.has(val)) chip.classList.add('locked-wrong');
+  });
+  const isCorrect = correctSet.size === chosenSet.size && [...correctSet].every(v=>chosenSet.has(v));
+  const feedback = document.getElementById('feedback');
+  handleResult(isCorrect, feedback,
+    isCorrect ? "Great reading — that's the full set!" : `Close — the correct themes were: ${q.correct.join(', ')}.`);
+}
+
+function handleResult(isCorrect, feedbackEl, message){
+  resultLog[idx] = isCorrect;
+  if(isCorrect){
+    score += 10;
+    correctCount += 1;
+    feedbackEl.textContent = "📗 " + message;
+    feedbackEl.className = 'feedback good';
+    litBook(idx, true);
+  } else {
+    feedbackEl.textContent = "📕 " + message;
+    feedbackEl.className = 'feedback bad';
+    litBook(idx, false);
+  }
   idx += 1;
   updateHud();
-  statusMsg.textContent = lives > 0 ? "Keep watching..." : "Losing them!";
+  refreshBadges();
+
   const nextBtn = document.createElement('button');
   nextBtn.className = 'action-btn';
-  nextBtn.textContent = (idx >= TOTAL || lives <= 0) ? 'See results' : 'Next round ➜';
-  nextBtn.addEventListener('click', loadRound);
+  nextBtn.textContent = (idx >= TOTAL) ? 'See results' : 'Next book ➜';
+  nextBtn.addEventListener('click', loadQuestion);
   document.querySelector('.card').appendChild(nextBtn);
 }
 
+function litBook(i, correct){
+  const b = document.getElementById('book-'+i);
+  if(b){
+    b.classList.add('lit');
+    b.style.background = correct ? '#1f8a83' : '#c9436b';
+  }
+}
+
 function endGame(){
-  const won = lives > 0;
+  const great = correctCount >= Math.ceil(TOTAL*0.8);
+  const good = correctCount >= Math.ceil(TOTAL*0.5);
   gameArea.innerHTML = `
     <div class="end-screen">
-      <div class="end-emoji">${won ? '🏆' : '🚢'}</div>
-      <h2>${won ? 'HANDS UP! You caught the car thieves!' : 'The ship sailed away...'}</h2>
+      <div class="end-emoji">${great ? '🏆' : good ? '📚' : '🔖'}</div>
+      <h2>${great ? 'Book Club Champion!' : good ? 'Great discussion!' : 'Keep reading and try again!'}</h2>
       <div class="end-stats">
         Final score: <b>${score}</b><br>
-        Rounds completed: <b>${idx} / ${TOTAL}</b><br>
-        Lives remaining: <b>${lives}</b>
+        Correct answers: <b>${correctCount} / ${TOTAL}</b>
       </div>
       <button class="restart-btn" id="restartBtn">Play again</button>
     </div>
   `;
-  statusMsg.textContent = won ? "Case closed!" : "Ship departed";
+  statusMsg.textContent = "Book club finished!";
   document.getElementById('restartBtn').addEventListener('click', startGame);
 }
 
 function startGame(){
-  score = 0; streak = 0; lives = 3; idx = 0;
-  spottedCar.style.opacity = '0';
-  loadRound();
+  idx = 0; score = 0; correctCount = 0; resultLog = [];
+  buildShelf();
+  loadQuestion();
 }
 
 startGame();
