@@ -3,414 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Detective: No. 1 and the Car Thieves</title>
+<title>Catch the Car Thieves! — Past Tense Chase</title>
 <style>
   :root{
-    --navy:#1F3A5F;
-    --navy-dark:#152740;
-    --terracotta:#C6642C;
-    --terracotta-dark:#A44E1F;
-    --green:#4C7A4A;
-    --sand:#F6EEDD;
-    --paper:#FFFBF2;
-    --ink:#241F1A;
-    --gold:#E8A33D;
-    --ok:#4C9A63;
-    --bad:#C4453A;
-    --chrome:#8FA3B8;
+    --navy:#12172b;
+    --navy2:#1c2340;
+    --asphalt:#2b2f3a;
+    --orange:#ef7a1d;
+    --orange-dark:#c9600f;
+    --yellow:#ffc93c;
+    --red:#e0483e;
+    --green:#3fb972;
+    --cream:#fff6ea;
+    --line:#4a5170;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;
-    background:
-      radial-gradient(circle at 85% 0%, #2A4A73 0%, transparent 45%),
-      linear-gradient(180deg,var(--navy) 0%, var(--navy-dark) 260px, var(--sand) 260px, var(--sand) 100%);
-    color:var(--ink);
-    min-height:100vh;
-    padding:18px 12px 60px;
+  html,body{
+    margin:0; padding:0; height:100%;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 55%, var(--asphalt) 100%);
+    color:var(--cream);
+    overflow-x:hidden;
   }
-  .wrap{max-width:560px;margin:0 auto;}
-
-  header{text-align:center;color:#fff;padding:6px 4px 18px;}
-  .eyebrow{
-    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--gold); font-weight:700; margin-bottom:6px;
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:18px 16px 40px;
   }
   h1{
-    margin:0 0 6px; font-size:27px; font-weight:800; letter-spacing:.01em;
-    text-shadow:0 2px 0 rgba(0,0,0,.15);
+    font-size:clamp(22px,5vw,32px);
+    margin:6px 0 2px;
+    text-align:center;
+    letter-spacing:0.5px;
+    color:var(--yellow);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.35);
   }
-  header p.sub{margin:0; font-size:14.5px; color:#D9E3EF; max-width:420px; margin:0 auto;}
+  .subtitle{
+    color:#c9cee0;
+    font-size:14px;
+    margin-bottom:14px;
+    text-align:center;
+  }
 
-  /* ---------- Case file progress (signature element) ---------- */
-  .case-panel{
-    background:var(--paper);
-    border-radius:18px;
-    box-shadow:0 10px 26px rgba(31,58,95,.25);
-    padding:16px 16px 14px;
-    margin-top:-14px;
-    margin-bottom:20px;
+  /* --- HUD --- */
+  .hud{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(255,255,255,0.06);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:10px 16px;
+    margin-bottom:16px;
+    font-weight:600;
+  }
+  .hud div{display:flex; align-items:center; gap:6px; font-size:14px;}
+  .hud .lives{color:var(--red); font-size:18px; letter-spacing:2px;}
+  .hud .score{color:var(--yellow);}
+  .hud .streak{color:var(--green);}
+
+  /* --- Road scene --- */
+  .scene{
     position:relative;
-    border:1px solid #EADFC6;
-  }
-  .case-scene{display:flex; align-items:center; justify-content:center; gap:14px;}
-  .magnifier{width:70px; height:70px; flex-shrink:0;}
-  .magnifier .lens{transition:stroke .3s ease;}
-  .clue-slots{display:flex; gap:6px; flex:1; flex-wrap:wrap; min-height:34px; align-items:center;}
-  .clue-chip{
-    background:var(--sand); border:1.5px dashed #C9BFA6; border-radius:8px;
-    padding:5px 9px; font-size:12px; font-weight:700; color:var(--navy);
-    opacity:.35;
-  }
-  .clue-chip.found{opacity:1; background:#E9F4EA; border-style:solid; border-color:var(--ok); animation:pop .3s ease;}
-  @keyframes pop{from{transform:scale(0);} to{transform:scale(1);}}
-
-  .progress-row{display:flex; align-items:center; gap:10px; margin-top:12px;}
-  .progress-track{flex:1; height:12px; background:#EADFC6; border-radius:8px; overflow:hidden;}
-  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--terracotta),var(--gold)); transition:width .5s ease;}
-  .score-label{font-size:13px; font-weight:700; color:var(--navy); white-space:nowrap;}
-
-  /* ---------- Screens ---------- */
-  .screen{display:none;}
-  .screen.active{display:block; animation:fade .35s ease;}
-  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-
-  .card{
-    background:var(--paper);
+    width:100%;
+    height:150px;
     border-radius:16px;
-    padding:20px 18px 22px;
-    box-shadow:0 8px 20px rgba(31,58,95,.12);
-    border:1px solid #EADFC6;
+    overflow:hidden;
+    margin-bottom:18px;
+    background:
+      linear-gradient(180deg,#8fb8e8 0%, #cfe4f7 45%, #45505f 45%, #3a4451 100%);
+    border:3px solid #10131f;
   }
-  .round-tag{
-    display:inline-block; background:var(--navy); color:#fff; font-size:12px; font-weight:700;
-    letter-spacing:.06em; text-transform:uppercase; padding:5px 11px; border-radius:20px; margin-bottom:10px;
+  .buildings{
+    position:absolute; top:0; left:0; right:0; height:45%;
+    background-repeat:repeat-x; background-size:auto 100%;
+    opacity:0.55;
   }
-  .round-tag.r2{background:var(--terracotta-dark);}
-  .round-tag.r3{background:var(--green);}
-  h2{margin:0 0 6px; font-size:21px; color:var(--navy);}
-  .instructions{font-size:14px; color:#5A5245; margin:0 0 16px; line-height:1.4;}
+  .buildings span{
+    position:absolute; bottom:0; width:26px;
+    background:#3d4a63;
+  }
+  .road-line{
+    position:absolute; bottom:22px; left:0; right:0; height:6px;
+    background: repeating-linear-gradient(90deg, var(--yellow) 0 26px, transparent 26px 52px);
+    animation: dash 0.5s linear infinite;
+  }
+  @keyframes dash{ from{ background-position-x:0;} to{ background-position-x:-52px;} }
 
-  .intro-illustration{text-align:center; font-size:52px; margin:6px 0 10px;}
-  .btn{
-    display:inline-block; border:none; cursor:pointer; font-family:inherit;
-    font-weight:700; font-size:15px; padding:12px 22px; border-radius:12px;
-    background:var(--terracotta); color:#fff; box-shadow:0 4px 0 var(--terracotta-dark);
-    transition:transform .08s ease;
+  .car{
+    position:absolute;
+    bottom:26px;
+    font-size:40px;
+    transition: left 0.35s ease-out;
+    filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.4));
   }
-  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--terracotta-dark);}
-  .btn.secondary{background:var(--navy); box-shadow:0 4px 0 var(--navy-dark);}
-  .btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none;}
-  .btn-row{text-align:center; margin-top:18px;}
+  .thief-car{ left:6%; }
+  .police-car{ right:6%; transform:scaleX(-1); }
 
-  /* Round 1: context-clue MCQ */
-  .clue-prompt{font-size:14px; color:#5A5245; margin-bottom:6px;}
-  .clue-base{
-    background:#FBF6EA; border-left:4px solid var(--terracotta);
-    padding:10px 13px; border-radius:6px; margin-bottom:14px; font-size:14.5px; line-height:1.45;
+  .status-msg{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,0.55);
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--yellow);
+    white-space:nowrap;
   }
-  .clue-base .hl{background:#FCE7B8; font-weight:700; padding:0 2px; border-radius:3px;}
-  .mcq-option{
-    display:block; width:100%; text-align:left; background:#fff; border:2px solid #DDD2B8;
-    border-radius:10px; padding:11px 14px; margin-bottom:9px; font-size:14.5px; cursor:pointer;
-    font-family:inherit; color:var(--ink);
-  }
-  .mcq-option:hover{border-color:var(--gold);}
-  .mcq-option.correct{background:#E4F3E7; border-color:var(--ok);}
-  .mcq-option.wrong{background:#F8E4E1; border-color:var(--bad);}
-  .mcq-option:disabled{cursor:default;}
 
-  /* Round 2: syllable builder */
-  .syll-word{
-    font-size:26px; font-weight:800; color:var(--navy); text-align:center; margin-bottom:6px; letter-spacing:.02em;
+  /* --- Question card --- */
+  .card{
+    width:100%;
+    background: var(--cream);
+    color:#25293a;
+    border-radius:18px;
+    padding:22px 20px 18px;
+    box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+    position:relative;
   }
-  .syll-sub{text-align:center; font-size:13px; color:#5A5245; margin-bottom:16px;}
-  .syll-choices{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .syll-choice{
-    background:#fff; border:2px solid var(--navy); border-radius:12px; padding:12px 8px;
-    font-size:17px; font-weight:700; letter-spacing:.05em; text-align:center; color:var(--navy); cursor:pointer;
+  .prompt-label{
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--orange-dark);
+    margin-bottom:6px;
   }
-  .syll-choice:hover{background:#EEF3F8;}
-  .syll-choice.correct{background:#E4F3E7; border-color:var(--ok); color:var(--ok);}
-  .syll-choice.wrong{background:#F8E4E1; border-color:var(--bad); color:var(--bad);}
-  .syll-choice:disabled{cursor:default;}
-
-  /* Round 3: sort feelings */
-  .chip-pool{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; min-height:44px;}
-  .chip{
-    background:#fff; border:2px solid var(--navy); color:var(--navy);
-    font-weight:700; font-size:13.5px; padding:9px 13px; border-radius:20px;
-    cursor:pointer; user-select:none; transition:.15s ease; max-width:100%;
+  .prompt{
+    font-size:clamp(20px,5.5vw,26px);
+    font-weight:800;
+    margin-bottom:4px;
+    line-height:1.25;
   }
-  .chip.selected{background:var(--navy); color:#fff;}
-  .chip.used{opacity:0; pointer-events:none; transform:scale(.4);}
-  .baskets{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
-  .basket{
-    border:2px dashed #C9BFA6; border-radius:12px; padding:10px 6px 12px; text-align:center;
-    background:#FBF6EA; cursor:pointer; transition:.15s ease; min-height:98px;
+  .prompt .verb{
+    color:var(--orange-dark);
+    border-bottom:3px dashed var(--orange);
+    padding-bottom:1px;
   }
-  .basket:hover{border-color:var(--gold);}
-  .basket .icon{font-size:24px; display:block; margin-bottom:4px;}
-  .basket .label{font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.25;}
-  .basket .filled{margin-top:6px; font-size:11.5px; color:#5A5245; word-break:break-word;}
-  .basket.flash-ok{background:#E4F3E7; border-color:var(--ok);}
-  .basket.flash-bad{background:#F8E4E1; border-color:var(--bad); animation:shake .3s;}
-  @keyframes shake{25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
-  .feedback-note{font-size:12.5px; margin-top:8px; color:#5A5245; min-height:16px;}
+  .sentence-hint{
+    font-size:14px;
+    color:#5a5f74;
+    margin-bottom:16px;
+    font-style:italic;
+  }
+  .options{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  @media (max-width:420px){
+    .options{grid-template-columns: 1fr;}
+  }
+  .opt{
+    background:white;
+    border:3px solid #dcdfe8;
+    border-radius:12px;
+    padding:14px 10px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+    color:#25293a;
+    transition: all 0.15s ease;
+  }
+  .opt:hover:not(:disabled){
+    border-color:var(--orange);
+    transform:translateY(-2px);
+  }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ background:var(--green); border-color:var(--green); color:white; }
+  .opt.wrong{ background:var(--red); border-color:var(--red); color:white; }
 
-  .nav-row{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
-  .step-count{font-size:12.5px; color:#8a8272; font-weight:700;}
+  .feedback{
+    min-height:24px;
+    margin-top:12px;
+    font-weight:700;
+    font-size:14px;
+    text-align:center;
+  }
+  .feedback.good{ color:#1b8a4f; }
+  .feedback.bad{ color:#c23a30; }
 
-  .final-emoji{font-size:60px; text-align:center; margin-bottom:6px;}
-  .final-score{text-align:center; font-size:19px; font-weight:800; color:var(--navy); margin-bottom:4px;}
-  .final-msg{text-align:center; font-size:14.5px; color:#5A5245; margin-bottom:6px;}
+  .next-btn{
+    display:block;
+    margin:14px auto 0;
+    background:var(--orange);
+    color:white;
+    border:none;
+    border-radius:30px;
+    padding:10px 26px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 4px 0 var(--orange-dark);
+  }
+  .next-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 var(--orange-dark); }
 
-  @media (max-width:380px){
-    h1{font-size:22px;}
-    .syll-choices{grid-template-columns:1fr;}
+  /* --- Game over screen --- */
+  .end-screen{
+    width:100%;
+    background:var(--cream);
+    color:#25293a;
+    border-radius:18px;
+    padding:34px 22px;
+    text-align:center;
+    box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+  }
+  .end-screen h2{ margin-top:0; font-size:26px; color:var(--orange-dark); }
+  .end-emoji{ font-size:56px; margin-bottom:6px; }
+  .end-stats{ font-size:16px; margin:14px 0 20px; line-height:1.7; }
+  .end-stats b{ color:var(--orange-dark); }
+  .restart-btn{
+    background:var(--navy);
+    color:var(--yellow);
+    border:none;
+    border-radius:30px;
+    padding:12px 30px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 4px 0 #000;
+  }
+  .restart-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 #000; }
+
+  .progress-bar{
+    width:100%;
+    height:8px;
+    background:rgba(255,255,255,0.15);
+    border-radius:6px;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--orange), var(--yellow));
+    width:0%;
+    transition: width 0.4s ease;
+  }
+
+  footer{
+    margin-top:22px;
+    font-size:12px;
+    color:#8890ab;
+    text-align:center;
   }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <h1>🚓 Catch the Car Thieves!</h1>
+  <div class="subtitle">Choose the correct <b>past tense</b> verb to close the gap before No.&nbsp;1 loses the Firebird.</div>
 
-  <header>
-    <div class="eyebrow">Unit 1 &middot; No. 1 and the Car Thieves</div>
-    <h1>Word Detective: Case of the Missing Rolls-Royce</h1>
-    <p class="sub">Crack the case by working out new words, splitting them into sounds, and reading characters' feelings.</p>
-  </header>
-
-  <div class="case-panel">
-    <div class="case-scene">
-      <svg class="magnifier" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-        <circle class="lens" id="lens" cx="28" cy="28" r="17" fill="#EAF2FA" stroke="#1F3A5F" stroke-width="4"/>
-        <line x1="40" y1="40" x2="60" y2="60" stroke="#8B5A2B" stroke-width="6" stroke-linecap="round"/>
-        <text id="lensMark" x="28" y="34" font-size="18" text-anchor="middle" fill="#C6642C" font-weight="bold"></text>
-      </svg>
-      <div class="clue-slots" id="clueSlots"></div>
-    </div>
-    <div class="progress-row">
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="score-label" id="scoreLabel">0 / 14 clues</div>
-    </div>
+  <div class="hud">
+    <div class="score">⭐ Score: <span id="scoreVal">0</span></div>
+    <div class="streak">🔥 Streak: <span id="streakVal">0</span></div>
+    <div class="lives" id="livesVal">❤❤❤</div>
   </div>
 
-  <!-- INTRO -->
-  <div class="screen active" id="screen-intro">
-    <div class="card">
-      <div class="intro-illustration">🕵️🚗🔍</div>
-      <h2>A Rolls-Royce has vanished!</h2>
-      <p class="instructions">
-        Outside Mama Coca-Cola's chop-house, a chief's shiny car has just been stolen. Play three
-        rounds to solve the case &mdash; work out tricky words from clues in the text, split them into
-        sounds, and figure out how the characters really feel from what they do.
-      </p>
-      <div class="btn-row"><button class="btn" onclick="goTo('r1')">Start Round 1</button></div>
-    </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="scene">
+    <div class="buildings" id="buildings"></div>
+    <div class="road-line"></div>
+    <div class="status-msg" id="statusMsg">Chase is on!</div>
+    <div class="car thief-car" id="thiefCar" style="left:8%">🚗</div>
+    <div class="car police-car" id="policeCar" style="right:70%">🚓</div>
   </div>
 
-  <!-- ROUND 1: context clues MCQ -->
-  <div class="screen" id="screen-r1">
-    <div class="card">
-      <span class="round-tag">Round 1 of 3</span>
-      <h2>Work out the word</h2>
-      <p class="instructions">Read the sentence from the story. Use the clues around the highlighted word to choose its meaning.</p>
-      <div id="r1Question"></div>
-      <div class="nav-row">
-        <span class="step-count" id="r1Count">Question 1 of 5</span>
-        <button class="btn secondary" id="r1Next" disabled onclick="goTo('r2')">Next round &rarr;</button>
-      </div>
-    </div>
-  </div>
+  <div id="gameArea"></div>
 
-  <!-- ROUND 2: syllable split -->
-  <div class="screen" id="screen-r2">
-    <div class="card">
-      <span class="round-tag r2">Round 2 of 3</span>
-      <h2>Segment the word</h2>
-      <p class="instructions">Choose how this word breaks into syllables so you can read it aloud.</p>
-      <div id="r2Question"></div>
-      <div class="nav-row">
-        <span class="step-count" id="r2Count">Word 1 of 5</span>
-        <button class="btn secondary" id="r2Next" disabled onclick="goTo('r3')">Next round &rarr;</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROUND 3: show don't tell sort -->
-  <div class="screen" id="screen-r3">
-    <div class="card">
-      <span class="round-tag r3">Round 3 of 3</span>
-      <h2>Show, don't tell</h2>
-      <p class="instructions">Tap an action below, then tap the feeling it shows.</p>
-      <div class="chip-pool" id="chipPool"></div>
-      <div class="baskets" id="basketRow">
-        <div class="basket" data-cat="shocked">
-          <span class="icon">😲</span>
-          <span class="label">Shocked / Amazed</span>
-          <div class="filled" id="basket-shocked"></div>
-        </div>
-        <div class="basket" data-cat="cautious">
-          <span class="icon">🤫</span>
-          <span class="label">Nervous / Cautious</span>
-          <div class="filled" id="basket-cautious"></div>
-        </div>
-        <div class="basket" data-cat="scornful">
-          <span class="icon">😒</span>
-          <span class="label">Scornful / Annoyed</span>
-          <div class="filled" id="basket-scornful"></div>
-        </div>
-        <div class="basket" data-cat="alarmed">
-          <span class="icon">😱</span>
-          <span class="label">Alarmed / Urgent</span>
-          <div class="filled" id="basket-alarmed"></div>
-        </div>
-      </div>
-      <div class="feedback-note" id="r3Feedback">&nbsp;</div>
-      <div class="nav-row">
-        <span class="step-count" id="r3Count">0 / 4 sorted</span>
-        <button class="btn secondary" id="r3Next" disabled onclick="finishGame()">See results &rarr;</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FINAL -->
-  <div class="screen" id="screen-final">
-    <div class="card">
-      <div class="final-emoji" id="finalEmoji">🎉</div>
-      <div class="final-score" id="finalScore">14 / 14 clues</div>
-      <p class="final-msg" id="finalMsg">Case closed! You cracked every clue.</p>
-      <div class="btn-row"><button class="btn" onclick="restartGame()">Play again</button></div>
-    </div>
-  </div>
-
+  <footer>Based on "No. 1 is Stolen" — Unit 1: Fiction, irregular past tense practice.</footer>
 </div>
 
 <script>
-/* ---------------- State ---------------- */
-const TOTAL_QUESTIONS = 5 + 5 + 4; // 14
+// ---------------- Verb data (drawn from the lesson) ----------------
+const verbs = [
+  {present:"says", past:"said"},
+  {present:"write", past:"wrote"},
+  {present:"thinks", past:"thought"},
+  {present:"fight", past:"fought"},
+  {present:"becomes", past:"became"},
+  {present:"goes", past:"went"},
+  {present:"drive", past:"drove"},
+  {present:"buy", past:"bought"},
+  {present:"teaches", past:"taught"},
+  {present:"spills", past:"spilt"},
+  {present:"speaks", past:"spoke"},
+  {present:"catch", past:"caught"},
+  {present:"take", past:"took"},
+  {present:"hear", past:"heard"},
+  {present:"am", past:"was"},
+  {present:"are", past:"were"},
+  {present:"bring", past:"brought"},
+  {present:"kneel", past:"knelt"}
+];
+
+const sentenceTemplates = {
+  said:"'Tonight,' ___ the first man.",
+  wrote:"Prof ___ a letter to No. 1's grandfather.",
+  thought:"No. 1 ___ about the thieves all night.",
+  fought:"The two men ___ over who should drive.",
+  became:"The sky ___ dark as the Firebird drove away.",
+  went:"Prof ___ into Pizza Hut to buy dinner.",
+  drove:"The thief ___ off before No. 1 could shout.",
+  bought:"Prof ___ pizza for the two of them.",
+  taught:"Grandfather ___ No. 1 how to stay calm.",
+  spilt:"The papers ___ under the seat.",
+  spoke:"A voice ___ from the passenger seat.",
+  caught:"It is the thieves who ___ No. 1, not the other way round.",
+  took:"The thieves ___ the Firebird and drove into the night.",
+  heard:"No. 1 ___ two men getting into the car.",
+  was:"No. 1 ___ stiff, like firewood, on the floor of the car.",
+  were:"There ___ two men in the car, and neither was Prof.",
+  brought:"Prof ___ pizza back to share with No. 1.",
+  knelt:"No. 1 ___ down to reach the papers."
+};
+
+let deck = [];
+let current = null;
 let score = 0;
-const clueIcons = ['🔎','🚗','🗝️','📝','👣','🔦','🧩','📷','🕵️','🔔','🚓','📌','🧾','🔍'];
+let streak = 0;
+let lives = 3;
+let questionIndex = 0;
+const TOTAL_Q = 10;
+let answered = false;
 
-function updateProgress(){
-  const pct = Math.round((score/TOTAL_QUESTIONS)*100);
-  document.getElementById('progressFill').style.width = pct+'%';
-  document.getElementById('scoreLabel').textContent = score+' / '+TOTAL_QUESTIONS+' clues';
-}
-
-function initClueSlots(){
-  const slots = document.getElementById('clueSlots');
-  slots.innerHTML = '';
-  for(let i=0;i<TOTAL_QUESTIONS;i++){
-    const c = document.createElement('span');
-    c.className = 'clue-chip';
-    c.id = 'clue-'+i;
-    c.textContent = clueIcons[i % clueIcons.length];
-    slots.appendChild(c);
-  }
-}
-
-function addClue(){
-  const el = document.getElementById('clue-'+(score-1));
-  if(el) el.classList.add('found');
-  // magnifier flash
-  const lens = document.getElementById('lens');
-  const mark = document.getElementById('lensMark');
-  lens.setAttribute('stroke', '#4C9A63');
-  mark.textContent = '\u2713';
-  setTimeout(()=>{ lens.setAttribute('stroke', '#1F3A5F'); mark.textContent=''; }, 450);
-}
-
-function registerAnswer(isCorrect){
-  if(isCorrect){ score++; addClue(); }
-  updateProgress();
-}
-
-function goTo(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-/* ---------------- ROUND 1: context clue MCQ ---------------- */
-const r1Questions = [
-  {
-    sentence: 'The next morning, before the sun has even passed the <span class="hl">horizon</span>, I am back in the palm tree.',
-    options: ['Where the land meets the sky', 'A type of tree', 'The middle of the day', 'A loud noise'],
-    correct: 0
-  },
-  {
-    sentence: 'Only <span class="hl">mammy-wagons</span> rumble up and down. The one they call Always Willing stops first. Its passengers climb down to eat akara.',
-    options: ['A type of car', 'A bus that carries passengers', 'A market stall', 'A type of food'],
-    correct: 1
-  },
-  {
-    sentence: 'The cars park in front of the <span class="hl">chop-house</span>. People get out to buy akara.',
-    options: ['A restaurant', 'A police station', 'A car park', 'A school'],
-    correct: 0
-  },
-  {
-    sentence: 'A big man in a chief\u2019s <span class="hl">agbada</span> robes enters the chop-house to sit on a chair and buy his akara.',
-    options: ['A type of car', 'A traditional Nigerian outfit for men', 'A kind of hat', 'A walking stick'],
-    correct: 1
-  },
-  {
-    sentence: 'He buys his akara at prices as <span class="hl">inflated</span> as his agbada, while his driver buys his own akara at a more affordable price.',
-    options: ['Made larger / higher than normal', 'Very cheap', 'Exactly the same', 'Made of rubber'],
-    correct: 0
-  }
-];
-let r1Index = 0;
-
-function buildRound1(){ renderR1Question(); }
-
-function renderR1Question(){
-  const q = r1Questions[r1Index];
-  const container = document.getElementById('r1Question');
-  container.innerHTML = `
-    <div class="clue-prompt">Read the clue sentence:</div>
-    <div class="clue-base">${q.sentence}</div>
-  `;
-  q.options.forEach((opt,i)=>{
-    const b = document.createElement('button');
-    b.className = 'mcq-option';
-    b.type = 'button';
-    b.textContent = opt;
-    b.addEventListener('click', ()=>answerRound1(b, i, q.correct));
-    container.appendChild(b);
-  });
-  document.getElementById('r1Count').textContent = 'Question '+(r1Index+1)+' of '+r1Questions.length;
-}
-
-function answerRound1(btn, chosenIdx, correctIdx){
-  const opts = document.querySelectorAll('#r1Question .mcq-option');
-  if(opts[0].disabled) return;
-  opts.forEach((o,i)=>{ o.disabled = true; if(i===correctIdx) o.classList.add('correct'); });
-  if(chosenIdx !== correctIdx) btn.classList.add('wrong');
-  registerAnswer(chosenIdx === correctIdx);
-
-  setTimeout(()=>{
-    if(r1Index < r1Questions.length - 1){
-      r1Index++;
-      renderR1Question();
-    } else {
-      document.getElementById('r1Next').disabled = false;
-    }
-  }, 900);
-}
-
-/* ---------------- ROUND 2: syllable split ---------------- */
-const r2Words = [
-  {word:'horizon', correct:'ho \u2013 ri \u2013 zon', wrong:['hor \u2013 iz \u2013 on','ho \u2013 riz \u2013 n']},
-  {word:'affordable', correct:'af \u2013 ford \u2013 a \u2013 ble', wrong:['aff \u2013 ord \u2013 able','a \u2013 ffor \u2013 dable']},
-  {word:'inflated', correct:'in \u2013 fla \u2013 ted', wrong:['inf \u2013 la \u2013 ted','in \u2013 flat \u2013 ed']},
-  {word:'chop-house', correct:'chop \u2013 house', wrong:['ch \u2013 op \u2013 house','cho \u2013 phouse']},
-  {word:'agbada', correct:'ag \u2013 ba \u2013 da', wrong:['a \u2013 gba \u2013 da','agb \u2013 a \u2013 da']}
-];
-let r2Index = 0;
-
-function buildRound2(){ renderR2Question(); }
+const gameArea = document.getElementById('gameArea');
+const scoreVal = document.getElementById('scoreVal');
+const streakVal = document.getElementById('streakVal');
+const livesVal = document.getElementById('livesVal');
+const progressFill = document.getElementById('progressFill');
+const statusMsg = document.getElementById('statusMsg');
+const thiefCar = document.getElementById('thiefCar');
+const policeCar = document.getElementById('policeCar');
+const buildingsWrap = document.getElementById('buildings');
 
 function shuffle(arr){
   const a = arr.slice();
@@ -421,161 +351,149 @@ function shuffle(arr){
   return a;
 }
 
-function renderR2Question(){
-  const q = r2Words[r2Index];
-  const container = document.getElementById('r2Question');
-  const choices = shuffle([q.correct, ...q.wrong]);
-  container.innerHTML = `
-    <div class="syll-word">${q.word}</div>
-    <div class="syll-sub">Which split is correct?</div>
-    <div class="syll-choices" id="syllChoices"></div>
-  `;
-  const choicesEl = document.getElementById('syllChoices');
-  choices.forEach(c=>{
-    const b = document.createElement('button');
-    b.className = 'syll-choice';
-    b.type = 'button';
-    b.textContent = c;
-    b.addEventListener('click', ()=>answerRound2(b, c, q.correct));
-    choicesEl.appendChild(b);
-  });
-  document.getElementById('r2Count').textContent = 'Word '+(r2Index+1)+' of '+r2Words.length;
+function buildBuildings(){
+  buildingsWrap.innerHTML = '';
+  let x = 0;
+  while(x < 900){
+    const w = 18 + Math.random()*20;
+    const h = 30 + Math.random()*65;
+    const b = document.createElement('span');
+    b.style.left = x+'px';
+    b.style.width = w+'px';
+    b.style.height = h+'%';
+    buildingsWrap.appendChild(b);
+    x += w + 8;
+  }
 }
 
-function answerRound2(btn, chosen, correct){
-  const opts = document.querySelectorAll('#syllChoices .syll-choice');
-  if(opts[0].disabled) return;
-  opts.forEach(o=>{ o.disabled = true; if(o.textContent === correct) o.classList.add('correct'); });
-  if(chosen !== correct) btn.classList.add('wrong');
-  registerAnswer(chosen === correct);
-
-  setTimeout(()=>{
-    if(r2Index < r2Words.length - 1){
-      r2Index++;
-      renderR2Question();
-    } else {
-      document.getElementById('r2Next').disabled = false;
-    }
-  }, 900);
+function newDeck(){
+  deck = shuffle(verbs).slice(0, TOTAL_Q);
 }
 
-/* ---------------- ROUND 3: show-don't-tell sort ---------------- */
-const r3Actions = [
-  {text:'"Our mouths are open, our hands are frozen."', cat:'shocked'},
-  {text:'"Peugeot 504," I whisper so Grandmother does not hear me.', cat:'cautious'},
-  {text:'Sissy narrows her eyes and sucks her teeth.', cat:'scornful'},
-  {text:'"THIEF! THIEF! THIEF!" I shout.', cat:'alarmed'}
-];
-let r3Selected = null;
-let r3SortedCount = 0;
-const r3Filled = {shocked:[], cautious:[], scornful:[], alarmed:[]};
-
-function buildRound3(){
-  const pool = document.getElementById('chipPool');
-  r3Actions.forEach((item, idx)=>{
-    const chip = document.createElement('button');
-    chip.className = 'chip';
-    chip.textContent = item.text;
-    chip.type = 'button';
-    chip.dataset.idx = idx;
-    chip.addEventListener('click', ()=>selectChip(chip, idx));
-    pool.appendChild(chip);
-  });
-  document.querySelectorAll('#basketRow .basket').forEach(b=>{
-    b.addEventListener('click', ()=>dropOnBasket(b.dataset.cat, b));
-  });
+function updateHud(){
+  scoreVal.textContent = score;
+  streakVal.textContent = streak;
+  livesVal.textContent = '❤'.repeat(lives) + '🖤'.repeat(3-lives);
+  progressFill.style.width = (questionIndex/TOTAL_Q*100)+'%';
 }
 
-function selectChip(chip, idx){
-  if(chip.classList.contains('used')) return;
-  document.querySelectorAll('#chipPool .chip').forEach(c=>c.classList.remove('selected'));
-  chip.classList.add('selected');
-  r3Selected = idx;
-  document.getElementById('r3Feedback').textContent = 'Now tap the feeling this action shows.';
+function updateCars(){
+  // thief car starts far ahead (right), police starts far back (left)
+  // gap closes as score increases relative to total
+  const progress = Math.min(questionIndex / TOTAL_Q, 1);
+  const thiefLeft = 8 + progress*55; // moves right slowly (getting caught = gap closes)
+  const policeRight = 70 - progress*62;
+  thiefCar.style.left = thiefLeft + '%';
+  policeCar.style.right = Math.max(policeRight, 6) + '%';
 }
 
-function dropOnBasket(cat, basketEl){
-  if(r3Selected === null){
-    document.getElementById('r3Feedback').textContent = 'Tap an action first, then tap a feeling basket.';
+function pickOptions(correctPast){
+  const distractors = shuffle(verbs.map(v=>v.past).filter(p => p !== correctPast));
+  const opts = shuffle([correctPast, distractors[0], distractors[1], distractors[2]]);
+  return opts;
+}
+
+function loadQuestion(){
+  if(questionIndex >= TOTAL_Q || lives <= 0){
+    endGame();
     return;
   }
-  const item = r3Actions[r3Selected];
-  const chip = document.querySelector('#chipPool .chip[data-idx="'+r3Selected+'"]');
-  const correct = item.cat === cat;
-  basketEl.classList.remove('flash-ok','flash-bad');
-  void basketEl.offsetWidth;
-  basketEl.classList.add(correct ? 'flash-ok' : 'flash-bad');
-  setTimeout(()=>basketEl.classList.remove('flash-ok','flash-bad'), 500);
+  answered = false;
+  current = deck[questionIndex];
+  const sentence = sentenceTemplates[current.past] || `Yesterday, No. 1 ___ (${current.present}).`;
+  const options = pickOptions(current.past);
 
-  if(correct){
-    chip.classList.add('used');
-    r3Filled[cat].push(item.text);
-    document.getElementById('basket-'+cat).textContent = r3Filled[cat].join(' / ');
-    r3SortedCount++;
-    document.getElementById('r3Count').textContent = r3SortedCount+' / 4 sorted';
-    document.getElementById('r3Feedback').textContent = '\u2713 That action shows feeling well!';
-    registerAnswer(true);
-    r3Selected = null;
-    if(r3SortedCount === r3Actions.length){
-      document.getElementById('r3Next').disabled = false;
-      document.getElementById('r3Feedback').textContent = 'All clues sorted! Tap See results.';
+  statusMsg.textContent = `Question ${questionIndex+1} of ${TOTAL_Q}`;
+
+  gameArea.innerHTML = `
+    <div class="card">
+      <div class="prompt-label">Choose the past tense</div>
+      <div class="prompt">Present: <span class="verb">${current.present}</span></div>
+      <div class="sentence-hint">${sentence.replace('___','______')}</div>
+      <div class="options" id="optionsWrap">
+        ${options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  `;
+
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', onAnswer);
+  });
+
+  updateHud();
+  updateCars();
+}
+
+function onAnswer(e){
+  if(answered) return;
+  answered = true;
+  const chosen = e.target.getAttribute('data-val');
+  const correct = current.past;
+  const feedback = document.getElementById('feedback');
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.disabled = true;
+    if(btn.getAttribute('data-val') === correct){
+      btn.classList.add('correct');
+    } else if(btn === e.target){
+      btn.classList.add('wrong');
     }
+  });
+
+  if(chosen === correct){
+    score += 10 + streak*2;
+    streak += 1;
+    feedback.textContent = "🚓 Nice! You closed in on the thieves.";
+    feedback.className = 'feedback good';
+    statusMsg.textContent = "Gaining on them!";
   } else {
-    document.getElementById('r3Feedback').textContent = 'Not quite \u2014 try a different feeling for that action.';
-    registerAnswer(false);
+    streak = 0;
+    lives -= 1;
+    feedback.textContent = `Not quite — the past tense of "${current.present}" is "${correct}".`;
+    feedback.className = 'feedback bad';
+    statusMsg.textContent = "They're getting away!";
   }
+
+  questionIndex += 1;
+  updateHud();
+  updateCars();
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'next-btn';
+  nextBtn.textContent = (questionIndex >= TOTAL_Q || lives <= 0) ? 'See results' : 'Next question ➜';
+  nextBtn.addEventListener('click', loadQuestion);
+  document.querySelector('.card').appendChild(nextBtn);
 }
 
-/* ---------------- Final screen ---------------- */
-function finishGame(){
-  goTo('final');
-  document.getElementById('finalScore').textContent = score+' / '+TOTAL_QUESTIONS+' clues';
-  const emojiEl = document.getElementById('finalEmoji');
-  const msgEl = document.getElementById('finalMsg');
-  if(score === TOTAL_QUESTIONS){
-    emojiEl.textContent = '🎉🚗';
-    msgEl.textContent = 'Case closed! You cracked every clue and solved the mystery.';
-  } else if(score >= TOTAL_QUESTIONS*0.7){
-    emojiEl.textContent = '🙂🔍';
-    msgEl.textContent = 'Good detective work! A few clues slipped away, but the case is nearly solved.';
-  } else {
-    emojiEl.textContent = '🧐';
-    msgEl.textContent = 'The trail has gone cold. Have another go to find all the clues.';
-  }
+function endGame(){
+  const won = lives > 0;
+  gameArea.innerHTML = `
+    <div class="end-screen">
+      <div class="end-emoji">${won ? '🏆' : '💨'}</div>
+      <h2>${won ? 'Case Closed — No. 1 caught the thieves!' : 'The Firebird got away...'}</h2>
+      <div class="end-stats">
+        Final score: <b>${score}</b><br>
+        Questions answered: <b>${questionIndex} / ${TOTAL_Q}</b><br>
+        Lives remaining: <b>${lives}</b>
+      </div>
+      <button class="restart-btn" id="restartBtn">Play again</button>
+    </div>
+  `;
+  statusMsg.textContent = won ? "Thieves caught!" : "Getaway complete";
+  document.getElementById('restartBtn').addEventListener('click', startGame);
 }
 
-function restartGame(){
+function startGame(){
   score = 0;
-  updateProgress();
-  initClueSlots();
-
-  document.getElementById('r1Question').innerHTML = '';
-  r1Index = 0;
-  document.getElementById('r1Next').disabled = true;
-  buildRound1();
-
-  document.getElementById('r2Question').innerHTML = '';
-  r2Index = 0;
-  document.getElementById('r2Next').disabled = true;
-  buildRound2();
-
-  document.getElementById('chipPool').innerHTML = '';
-  ['shocked','cautious','scornful','alarmed'].forEach(c=>{ r3Filled[c]=[]; document.getElementById('basket-'+c).textContent=''; });
-  r3SortedCount = 0; r3Selected = null;
-  document.getElementById('r3Count').textContent = '0 / 4 sorted';
-  document.getElementById('r3Feedback').textContent = '\u00a0';
-  document.getElementById('r3Next').disabled = true;
-  buildRound3();
-
-  goTo('intro');
+  streak = 0;
+  lives = 3;
+  questionIndex = 0;
+  newDeck();
+  buildBuildings();
+  loadQuestion();
 }
 
-/* ---------------- Init ---------------- */
-initClueSlots();
-buildRound1();
-buildRound2();
-buildRound3();
-updateProgress();
+startGame();
 </script>
 </body>
 </html>
