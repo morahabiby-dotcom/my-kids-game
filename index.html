@@ -2,455 +2,610 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>No. 1 Car Spotter Challenge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Day: Fix the Cart</title>
 <style>
   :root{
-    --road:#2E86AB;
-    --road-dark:#1F5F7A;
-    --sun:#f2a541;
-    --clay:#c96a3f;
-    --sky:#eaf4fa;
-    --cream:#fffaf0;
-    --ink:#1c2b33;
-    --card:#ffffff;
-    --purple:#7B4FA0;
+    --navy:#1F3A5F;
+    --navy-dark:#152740;
+    --terracotta:#C6642C;
+    --terracotta-dark:#A44E1F;
+    --green:#4C7A4A;
+    --sand:#F6EEDD;
+    --paper:#FFFBF2;
+    --ink:#241F1A;
+    --gold:#E8A33D;
+    --ok:#4C9A63;
+    --bad:#C4453A;
+    --wood:#8B5A2B;
   }
   *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
   body{
-    margin:0;
-    font-family:'Trebuchet MS', 'Segoe UI', sans-serif;
+    font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, #dcecf7 0%, transparent 45%),
-      radial-gradient(circle at 85% 90%, #fdf0dd 0%, transparent 50%),
-      var(--sky);
+      radial-gradient(circle at 15% 0%, #2A4A73 0%, transparent 45%),
+      linear-gradient(180deg,var(--navy) 0%, var(--navy-dark) 260px, var(--sand) 260px, var(--sand) 100%);
     color:var(--ink);
     min-height:100vh;
-    padding:18px;
+    padding:18px 12px 60px;
   }
-  .wrap{max-width:780px;margin:0 auto;}
-  header{text-align:center;margin-bottom:14px;}
-  header h1{font-size:1.7rem;margin:0;color:var(--road-dark);letter-spacing:0.5px;}
-  header p{margin:4px 0 0;color:#4a6b7a;font-size:0.95rem;}
+  .wrap{max-width:560px;margin:0 auto;}
 
-  .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
-  .tab-btn{
-    border:none;background:var(--card);color:var(--road-dark);
-    padding:9px 16px;border-radius:999px;font-weight:bold;font-size:0.85rem;
-    cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.08);transition:transform .15s;
+  /* ---------- Header ---------- */
+  header{text-align:center;color:#fff;padding:6px 4px 18px;}
+  .eyebrow{
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); font-weight:700; margin-bottom:6px;
   }
-  .tab-btn.active{background:var(--road);color:white;transform:translateY(-2px);}
-  .tab-btn:hover{transform:translateY(-2px);}
+  h1{
+    margin:0 0 6px; font-size:30px; font-weight:800; letter-spacing:.01em;
+    text-shadow:0 2px 0 rgba(0,0,0,.15);
+  }
+  header p.sub{margin:0; font-size:14.5px; color:#D9E3EF; max-width:420px; margin:0 auto;}
 
-  .panel{display:none;}
-  .panel.active{display:block;}
+  /* ---------- Cart progress (signature element) ---------- */
+  .cart-panel{
+    background:var(--paper);
+    border-radius:18px;
+    box-shadow:0 10px 26px rgba(31,58,95,.25);
+    padding:16px 16px 10px;
+    margin-top:-14px;
+    margin-bottom:20px;
+    position:relative;
+    border:1px solid #EADFC6;
+  }
+  .cart-scene{
+    display:flex; align-items:flex-end; justify-content:center;
+    height:96px; position:relative;
+  }
+  .cart-bed{
+    position:relative;
+    width:180px; height:70px;
+  }
+  .goods-layer{
+    position:absolute; bottom:34px; left:6px; right:6px;
+    display:flex; flex-wrap:wrap-reverse; align-content:flex-end; justify-content:center;
+    gap:2px; height:60px; overflow:hidden;
+  }
+  .goods-layer span{font-size:20px; line-height:1; animation:pop .35s ease;}
+  @keyframes pop{from{transform:scale(0) translateY(6px); opacity:0;} to{transform:scale(1) translateY(0); opacity:1;}}
+
+  svg.cart-svg{display:block; width:180px; height:70px;}
+  .wheel{transform-origin:center; }
+  .wheel.spin{animation:spin .6s linear;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .crack-line{transition:opacity .4s ease;}
+
+  .progress-row{display:flex; align-items:center; gap:10px; margin-top:8px;}
+  .progress-track{flex:1; height:12px; background:#EADFC6; border-radius:8px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--terracotta),var(--gold)); transition:width .5s ease;}
+  .score-label{font-size:13px; font-weight:700; color:var(--navy); white-space:nowrap;}
+
+  /* ---------- Screens ---------- */
+  .screen{display:none;}
+  .screen.active{display:block; animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
   .card{
-    background:var(--card);border-radius:16px;padding:18px;
-    box-shadow:0 4px 14px rgba(30,60,80,0.12);margin-bottom:16px;
+    background:var(--paper);
+    border-radius:16px;
+    padding:20px 18px 22px;
+    box-shadow:0 8px 20px rgba(31,58,95,.12);
+    border:1px solid #EADFC6;
   }
-  .score-row{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:10px;font-size:0.9rem;color:var(--road-dark);font-weight:bold;
+  .round-tag{
+    display:inline-block; background:var(--navy); color:#fff; font-size:12px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; padding:5px 11px; border-radius:20px; margin-bottom:10px;
   }
-  .score-pill{background:var(--sun);color:#5a3600;padding:4px 12px;border-radius:999px;font-size:0.85rem;}
+  .round-tag.r2{background:var(--terracotta-dark);}
+  .round-tag.r3{background:var(--green);}
+  h2{margin:0 0 6px; font-size:21px; color:var(--navy);}
+  .instructions{font-size:14px; color:#5A5245; margin:0 0 16px; line-height:1.4;}
 
-  /* ---- Game 1: Sentence sort ---- */
-  #sentBank{
-    display:flex;flex-direction:column;gap:8px;
-    padding:10px;background:var(--cream);border-radius:12px;
-    margin-bottom:14px;border:2px dashed #e0c9a0;min-height:60px;
+  /* Intro */
+  .intro-illustration{text-align:center; font-size:52px; margin:6px 0 10px;}
+  .btn{
+    display:inline-block; border:none; cursor:pointer; font-family:inherit;
+    font-weight:700; font-size:15px; padding:12px 22px; border-radius:12px;
+    background:var(--terracotta); color:#fff; box-shadow:0 4px 0 var(--terracotta-dark);
+    transition:transform .08s ease;
   }
-  .sent-tile{
-    background:var(--road);color:white;padding:9px 14px;border-radius:10px;
-    font-size:0.92rem;font-weight:bold;cursor:grab;user-select:none;
-    box-shadow:0 2px 0 rgba(0,0,0,0.15);
-  }
-  .sent-tile.placed{opacity:0.3;cursor:default;box-shadow:none;}
-  .sent-tile.wrong-shake{animation:shake .4s;}
-  @keyframes shake{
-    0%,100%{transform:translateX(0);}
-    25%{transform:translateX(-6px);}
-    75%{transform:translateX(6px);}
-  }
-  .sent-bins{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .sbin{min-height:100px;border-radius:12px;padding:10px;border:3px solid transparent;}
-  .sbin h3{margin:0 0 4px;font-size:0.9rem;text-align:center;}
-  .sbin.statement{background:#e7f2ff;border-color:#a9cdf2;}
-  .sbin.question{background:#fff0e3;border-color:#f2c79a;}
-  .sbin.command{background:#f3e8ff;border-color:#d3aef2;}
-  .sbin.exclamation{background:#ffe3e3;border-color:#f2a9a9;}
-  .sbin.dragover{border-style:dashed;transform:scale(1.02);}
-  .sbin .dropped{
-    background:rgba(255,255,255,0.9);padding:5px 8px;border-radius:8px;
-    font-size:0.8rem;font-weight:bold;margin-top:4px;
-  }
-  @media (max-width:520px){ .sent-bins{grid-template-columns:1fr;} }
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--terracotta-dark);}
+  .btn.secondary{background:var(--navy); box-shadow:0 4px 0 var(--navy-dark);}
+  .btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none;}
+  .btn-row{text-align:center; margin-top:18px;}
 
-  /* ---- Game 2: Odd one out ---- */
-  .phonics-q{
-    background:var(--cream);border-radius:12px;padding:16px;margin-bottom:14px;
-    text-align:center;
+  /* Round 1: sort chips into baskets */
+  .chip-pool{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; min-height:44px;}
+  .chip{
+    background:#fff; border:2px solid var(--navy); color:var(--navy);
+    font-weight:700; font-size:14px; padding:8px 14px; border-radius:20px;
+    cursor:pointer; user-select:none; transition:.15s ease;
   }
-  .phonics-q .words{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
-  .word-btn{
-    padding:10px 18px;border-radius:10px;border:2px solid var(--road);
-    background:white;color:var(--road-dark);font-weight:bold;font-size:1rem;cursor:pointer;
+  .chip.selected{background:var(--navy); color:#fff;}
+  .chip.used{opacity:0; pointer-events:none; transform:scale(.4);}
+  .baskets{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .basket{
+    border:2px dashed #C9BFA6; border-radius:12px; padding:10px 6px 12px; text-align:center;
+    background:#FBF6EA; cursor:pointer; transition:.15s ease; min-height:98px;
   }
-  .word-btn.correct{background:#d9f0d0;border-color:#4a9e6b;color:#2b5f2b;}
-  .word-btn.incorrect{background:#fbe0e0;border-color:var(--clay);color:#7a2020;}
-  .phonics-feedback{text-align:center;font-weight:bold;min-height:24px;margin-top:8px;}
-  .phonics-feedback.correct{color:#2b5f2b;}
-  .phonics-feedback.incorrect{color:var(--clay);}
+  .basket:hover{border-color:var(--gold);}
+  .basket .icon{font-size:26px; display:block; margin-bottom:4px;}
+  .basket .label{font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.25;}
+  .basket .filled{margin-top:6px; font-size:12px; color:#5A5245; word-break:break-word;}
+  .basket.flash-ok{background:#E4F3E7; border-color:var(--ok);}
+  .basket.flash-bad{background:#F8E4E1; border-color:var(--bad); animation:shake .3s;}
+  @keyframes shake{25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
 
-  /* ---- Game 3: Word meaning match ---- */
-  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
-  .match-col h4{text-align:center;color:var(--road-dark);margin:0 0 8px;}
-  .match-item{
-    background:var(--cream);border:2px solid #e0c9a0;padding:9px;border-radius:10px;
-    margin-bottom:8px;text-align:center;font-weight:bold;cursor:pointer;
-    font-size:0.85rem;user-select:none;
+  /* Round 2: sentence sort */
+  .sentence-card{
+    background:#FBF6EA; border:1px solid #EADFC6; border-radius:12px; padding:14px 14px 12px;
+    margin-bottom:12px;
   }
-  .match-item.selected{background:var(--sun);border-color:#c97f1a;}
-  .match-item.matched{background:#d9f0d0;border-color:#4a9e6b;color:#2b5f2b;cursor:default;}
-  .match-item.shake{animation:shake .4s;}
+  .sentence-text{font-size:15px; line-height:1.4; margin-bottom:10px;}
+  .choice-row{display:flex; gap:8px;}
+  .choice-btn{
+    flex:1; border:2px solid var(--navy); background:#fff; color:var(--navy); font-weight:700;
+    font-size:13.5px; padding:9px 6px; border-radius:10px; cursor:pointer;
+  }
+  .choice-btn.correct{background:var(--ok); border-color:var(--ok); color:#fff;}
+  .choice-btn.wrong{background:var(--bad); border-color:var(--bad); color:#fff;}
+  .choice-btn:disabled{cursor:default;}
+  .feedback-note{font-size:12.5px; margin-top:8px; color:#5A5245; min-height:16px;}
 
-  .win-banner{
-    display:none;text-align:center;background:linear-gradient(135deg,#fff6df,#ffe9c2);
-    border-radius:14px;padding:16px;margin-top:14px;font-weight:bold;color:#7a4a00;
-    border:2px solid var(--sun);
+  /* Round 3: MCQ */
+  .mcq-prompt{
+    font-size:14px; color:#5A5245; margin-bottom:6px;
   }
-  .reset-btn{
-    display:block;margin:10px auto 0;padding:7px 18px;background:var(--road);
-    color:white;border:none;border-radius:999px;font-weight:bold;cursor:pointer;font-size:0.85rem;
+  .mcq-base{
+    font-style:italic; background:#FBF6EA; border-left:4px solid var(--terracotta);
+    padding:8px 12px; border-radius:6px; margin-bottom:14px; font-size:14px;
   }
-  .next-btn{
-    display:block;margin:14px auto 0;padding:9px 22px;background:var(--road-dark);
-    color:white;border:none;border-radius:999px;font-weight:bold;cursor:pointer;
+  .mcq-option{
+    display:block; width:100%; text-align:left; background:#fff; border:2px solid #DDD2B8;
+    border-radius:10px; padding:11px 14px; margin-bottom:9px; font-size:14.5px; cursor:pointer;
+    font-family:inherit; color:var(--ink);
   }
-  footer{text-align:center;font-size:0.75rem;color:#7a94a3;margin-top:10px;}
+  .mcq-option:hover{border-color:var(--gold);}
+  .mcq-option.correct{background:#E4F3E7; border-color:var(--ok);}
+  .mcq-option.wrong{background:#F8E4E1; border-color:var(--bad);}
+  .mcq-option:disabled{cursor:default;}
+
+  .nav-row{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
+  .step-count{font-size:12.5px; color:#8a8272; font-weight:700;}
+
+  /* Final screen */
+  .final-emoji{font-size:60px; text-align:center; margin-bottom:6px;}
+  .final-score{text-align:center; font-size:19px; font-weight:800; color:var(--navy); margin-bottom:4px;}
+  .final-msg{text-align:center; font-size:14.5px; color:#5A5245; margin-bottom:6px;}
+
+  @media (max-width:380px){
+    h1{font-size:25px;}
+    .baskets{grid-template-columns:1fr 1fr 1fr; gap:6px;}
+    .basket{padding:8px 4px 10px;}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+
   <header>
-    <h1>🚗 No. 1 Car Spotter Challenge</h1>
-    <p>Sentence types, spelling patterns &amp; word meanings — Unit 1</p>
+    <div class="eyebrow">Unit 1 &middot; The New Cart</div>
+    <h1>Market Day: Fix the Cart!</h1>
+    <p class="sub">Help load the cart for market by mastering speech words, the past tense and punctuation.</p>
   </header>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="sent">🛣️ Sentence Sort</button>
-    <button class="tab-btn" data-tab="phon">🔊 Odd One Out</button>
-    <button class="tab-btn" data-tab="vocab">📖 Word Match</button>
-  </div>
-
-  <!-- GAME 1: SENTENCE TYPE SORT -->
-  <div class="panel active" id="panel-sent">
-    <div class="card">
-      <div class="score-row">
-        <span>Drag each sentence into the right garage</span>
-        <span class="score-pill" id="sentScore">0 / 8</span>
+  <div class="cart-panel">
+    <div class="cart-scene">
+      <div class="cart-bed">
+        <div class="goods-layer" id="goodsLayer"></div>
+        <svg class="cart-svg" viewBox="0 0 180 70" xmlns="http://www.w3.org/2000/svg">
+          <!-- cart body -->
+          <path id="cartBoard" d="M20 30 L160 30 L150 46 L30 46 Z" fill="#8B5A2B" stroke="#5C3A1B" stroke-width="2"/>
+          <line id="crackLine" class="crack-line" x1="90" y1="30" x2="90" y2="46" stroke="#3A2412" stroke-width="3" opacity="1"/>
+          <!-- wheels -->
+          <g class="wheel" id="wheelL" transform="translate(48,54)">
+            <circle r="12" fill="#3A2412" stroke="#1F140B" stroke-width="2"/>
+            <circle r="3.4" fill="#C6642C"/>
+          </g>
+          <g class="wheel" id="wheelR" transform="translate(132,54)">
+            <circle r="12" fill="#3A2412" stroke="#1F140B" stroke-width="2"/>
+            <circle r="3.4" fill="#C6642C"/>
+          </g>
+        </svg>
       </div>
-      <div id="sentBank"></div>
-      <div class="sent-bins">
-        <div class="sbin statement" data-type="statement"><h3>🚙 Statement ( . )</h3></div>
-        <div class="sbin question" data-type="question"><h3>❓ Question ( ? )</h3></div>
-        <div class="sbin command" data-type="command"><h3>👉 Command ( . / ! )</h3></div>
-        <div class="sbin exclamation" data-type="exclamation"><h3>❗ Exclamation ( ! )</h3></div>
-      </div>
-      <div class="win-banner" id="sentWin">🎉 Fantastic! Every sentence parked correctly!</div>
-      <button class="reset-btn" onclick="initSent()">Play again</button>
+    </div>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="score-label" id="scoreLabel">0 / 14 loaded</div>
     </div>
   </div>
 
-  <!-- GAME 2: ODD ONE OUT (PHONICS) -->
-  <div class="panel" id="panel-phon">
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
     <div class="card">
-      <div class="score-row">
-        <span>Tap the word where the red letters sound different</span>
-        <span class="score-pill" id="phonScore">Score: 0</span>
-      </div>
-      <div class="phonics-q" id="phonQ"></div>
-      <div class="phonics-feedback" id="phonFeedback"></div>
-      <button class="next-btn" id="phonNextBtn" style="display:none" onclick="nextPhon()">Next →</button>
+      <div class="intro-illustration">🧺🥭🍊</div>
+      <h2>The cart has snapped in half!</h2>
+      <p class="instructions">
+        It's the night before market day and the old wooden cart has broken. Play three quick rounds
+        to earn goods for the cart &mdash; sort words for <strong>said</strong>, sort verbs in the
+        <strong>past tense</strong>, and punctuate the villagers' speech correctly. Get them all loaded
+        before morning!
+      </p>
+      <div class="btn-row"><button class="btn" onclick="goTo('r1')">Start Round 1</button></div>
     </div>
   </div>
 
-  <!-- GAME 3: WORD MEANING MATCH -->
-  <div class="panel" id="panel-vocab">
+  <!-- ROUND 1 -->
+  <div class="screen" id="screen-r1">
     <div class="card">
-      <div class="score-row">
-        <span>Tap a word, then tap its meaning</span>
-        <span class="score-pill" id="vocabScore">0 / 6 pairs</span>
+      <span class="round-tag">Round 1 of 3</span>
+      <h2>Sort the words for "said"</h2>
+      <p class="instructions">Tap a word below, then tap the basket that matches how it sounds.</p>
+      <div class="chip-pool" id="chipPool"></div>
+      <div class="baskets" id="basketRow">
+        <div class="basket" data-cat="sad">
+          <span class="icon">😢</span>
+          <span class="label">Sad / Upset</span>
+          <div class="filled" id="basket-sad"></div>
+        </div>
+        <div class="basket" data-cat="calm">
+          <span class="icon">🙂</span>
+          <span class="label">Calm</span>
+          <div class="filled" id="basket-calm"></div>
+        </div>
+        <div class="basket" data-cat="happy">
+          <span class="icon">😄</span>
+          <span class="label">Happy</span>
+          <div class="filled" id="basket-happy"></div>
+        </div>
       </div>
-      <div class="match-grid">
-        <div class="match-col"><h4>Word</h4><div id="vocabLeft"></div></div>
-        <div class="match-col"><h4>Meaning</h4><div id="vocabRight"></div></div>
+      <div class="feedback-note" id="r1Feedback">&nbsp;</div>
+      <div class="nav-row">
+        <span class="step-count" id="r1Count">0 / 10 sorted</span>
+        <button class="btn secondary" id="r1Next" disabled onclick="goTo('r2')">Next round &rarr;</button>
       </div>
-      <div class="win-banner" id="vocabWin">🌟 Excellent! You matched every word!</div>
-      <button class="reset-btn" onclick="initVocab()">Play again</button>
     </div>
   </div>
 
-  <footer>Based on "The No. 1 Car Spotter" by Atinuke · Unit 1: Fiction</footer>
+  <!-- ROUND 2 -->
+  <div class="screen" id="screen-r2">
+    <div class="card">
+      <span class="round-tag r2">Round 2 of 3</span>
+      <h2>-ed or was/were + -ing?</h2>
+      <p class="instructions">Read each sentence and choose the past-tense pattern it uses.</p>
+      <div id="r2List"></div>
+      <div class="nav-row">
+        <span class="step-count" id="r2Count">0 / 6 answered</span>
+        <button class="btn secondary" id="r2Next" disabled onclick="goTo('r3')">Next round &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUND 3 -->
+  <div class="screen" id="screen-r3">
+    <div class="card">
+      <span class="round-tag r3">Round 3 of 3</span>
+      <h2>Punctuate the speech</h2>
+      <p class="instructions">Pick the sentence that is punctuated correctly.</p>
+      <div id="r3Question"></div>
+      <div class="nav-row">
+        <span class="step-count" id="r3Count">Question 1 of 4</span>
+        <button class="btn secondary" id="r3Next" disabled onclick="finishGame()">See results &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="screen" id="screen-final">
+    <div class="card">
+      <div class="final-emoji" id="finalEmoji">🎉</div>
+      <div class="final-score" id="finalScore">14 / 14 loaded</div>
+      <p class="final-msg" id="finalMsg">The cart is mended and market day is saved!</p>
+      <div class="btn-row"><button class="btn" onclick="restartGame()">Play again</button></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-/* ---------- TAB SWITCHING ---------- */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-  });
-});
+/* ---------------- State ---------------- */
+const TOTAL_QUESTIONS = 10 + 6 + 4; // 20
+let score = 0;
+const goodsEmojis = ['🥭','🍊','🌶️','🧅','🍅','🧺','🥔','🍚','🧂','🐟','🥭','🍊','🌶️','🧅','🍅','🧺','🥔','🍚','🧂','🐟'];
 
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
+function updateProgress(){
+  const pct = Math.round((score/TOTAL_QUESTIONS)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('scoreLabel').textContent = score+' / '+TOTAL_QUESTIONS+' loaded';
+  // crack line fades as score rises
+  document.getElementById('crackLine').style.opacity = Math.max(0, 1-(score/TOTAL_QUESTIONS)*1.3);
 }
 
-/* ================= GAME 1: SENTENCE TYPE SORT ================= */
-const sentItems = [
-  {s:'No. 1 likes to spot cars.', t:'statement'},
-  {s:'My name is Oluwalase.', t:'statement'},
-  {s:'Where does No. 1 live?', t:'question'},
-  {s:'What is No. 1\'s hobby?', t:'question'},
-  {s:'Look at that car.', t:'command'},
-  {s:'Spot the Firebird!', t:'command'},
-  {s:'What an amazing car!', t:'exclamation'},
-  {s:'What a lot of cars!', t:'exclamation'},
+function addGood(){
+  const layer = document.getElementById('goodsLayer');
+  const s = document.createElement('span');
+  s.textContent = goodsEmojis[Math.min(score-1, goodsEmojis.length-1)] || '🥭';
+  layer.appendChild(s);
+  // spin wheels
+  ['wheelL','wheelR'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin');
+  });
+}
+
+function registerAnswer(isCorrect){
+  if(isCorrect){ score++; addGood(); }
+  updateProgress();
+}
+
+function goTo(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------------- ROUND 1: sort chips ---------------- */
+const r1Words = [
+  {w:'wailed', cat:'sad'}, {w:'moaned', cat:'sad'}, {w:'cried', cat:'sad'}, {w:'sobbed', cat:'sad'},
+  {w:'shouted', cat:'sad'},
+  {w:'asked', cat:'calm'}, {w:'answered', cat:'calm'}, {w:'replied', cat:'calm'},
+  {w:'laughed', cat:'happy'}, {w:'joked', cat:'happy'}
 ];
-let sentState = {};
+let r1Selected = null;
+let r1SortedCount = 0;
+const r1Filled = {sad:[], calm:[], happy:[]};
 
-function initSent(){
-  sentState = {correct:0};
-  document.getElementById('sentWin').style.display='none';
-  const bank = document.getElementById('sentBank');
-  bank.innerHTML='';
-  document.querySelectorAll('.sbin').forEach(b=>{
-    b.querySelectorAll('.dropped').forEach(d=>d.remove());
+function buildRound1(){
+  const pool = document.getElementById('chipPool');
+  r1Words.forEach((item, idx)=>{
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.textContent = item.w;
+    chip.type = 'button';
+    chip.dataset.idx = idx;
+    chip.addEventListener('click', ()=>selectChip(chip, idx));
+    pool.appendChild(chip);
   });
-  updateSentScore();
-  const items = shuffle(sentItems);
-  items.forEach((item,idx)=>{
-    const tile = document.createElement('div');
-    tile.className='sent-tile';
-    tile.textContent = item.s;
-    tile.draggable = true;
-    tile.id = 'sent-'+idx;
-    tile.dataset.type = item.t;
-    tile.addEventListener('dragstart', e=>{
-      e.dataTransfer.setData('text/plain', tile.id);
-    });
-    bank.appendChild(tile);
+  document.querySelectorAll('#basketRow .basket').forEach(b=>{
+    b.addEventListener('click', ()=>dropOnBasket(b.dataset.cat, b));
   });
 }
 
-document.querySelectorAll('.sbin').forEach(bin=>{
-  bin.addEventListener('dragover', e=>{ e.preventDefault(); bin.classList.add('dragover'); });
-  bin.addEventListener('dragleave', ()=> bin.classList.remove('dragover'));
-  bin.addEventListener('drop', e=>{
-    e.preventDefault();
-    bin.classList.remove('dragover');
-    const id = e.dataTransfer.getData('text/plain');
-    const tile = document.getElementById(id);
-    if(!tile || tile.classList.contains('placed')) return;
-    handleSentDrop(tile, bin);
-  });
-  bin.addEventListener('click', ()=>{
-    if(window.__selectedSent){
-      handleSentDrop(window.__selectedSent, bin);
-      window.__selectedSent.style.outline='';
-      window.__selectedSent=null;
-    }
-  });
-});
-
-document.getElementById('sentBank').addEventListener('click', e=>{
-  const tile = e.target.closest('.sent-tile');
-  if(!tile || tile.classList.contains('placed')) return;
-  window.__selectedSent = tile;
-  document.querySelectorAll('.sent-tile').forEach(t=>t.style.outline='');
-  tile.style.outline = '3px solid #f2a541';
-});
-
-function handleSentDrop(tile, bin){
-  if(tile.dataset.type === bin.dataset.type){
-    tile.classList.add('placed');
-    tile.draggable = false;
-    const label = document.createElement('div');
-    label.className='dropped';
-    label.textContent = tile.textContent;
-    bin.appendChild(label);
-    sentState.correct++;
-    updateSentScore();
-    if(sentState.correct === sentItems.length){
-      document.getElementById('sentWin').style.display='block';
-    }
-  } else {
-    tile.classList.add('wrong-shake');
-    setTimeout(()=>tile.classList.remove('wrong-shake'), 400);
-  }
+function selectChip(chip, idx){
+  if(chip.classList.contains('used')) return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  r1Selected = idx;
+  document.getElementById('r1Feedback').textContent = 'Now tap a basket for "'+r1Words[idx].w+'"';
 }
 
-function updateSentScore(){
-  document.getElementById('sentScore').textContent = sentState.correct + ' / ' + sentItems.length;
-}
-initSent();
-
-/* ================= GAME 2: ODD ONE OUT (PHONICS) ================= */
-const phonQuestions = [
-  {words:['cars','centre','city'], odd:'cars', hint:'c'},
-  {words:['yams','Easy','hobby'], odd:'yams', hint:'y'},
-  {words:['goat','grass','Emergency'], odd:'Emergency', hint:'g'},
-  {words:['who','while','when'], odd:'who', hint:'wh'},
-  {words:['should','shout','compound'], odd:'compound', hint:'ou'},
-  {words:['nut','work','engine'], odd:'work', hint:'u'},
-  {words:['Mercedes','spot','station'], odd:'station', hint:'s'},
-  {words:['jar','know','could'], odd:'jar', hint:'silent letters'},
-];
-let phonOrder = [];
-let phonIdx = 0;
-let phonScore = 0;
-let phonAnswered = false;
-
-function initPhon(){
-  phonOrder = shuffle(phonQuestions);
-  phonIdx = 0;
-  phonScore = 0;
-  document.getElementById('phonScore').textContent = 'Score: 0';
-  showPhon();
-}
-
-function showPhon(){
-  phonAnswered = false;
-  document.getElementById('phonFeedback').textContent='';
-  document.getElementById('phonFeedback').className='phonics-feedback';
-  document.getElementById('phonNextBtn').style.display='none';
-  const q = document.getElementById('phonQ');
-  if(phonIdx >= phonOrder.length){
-    q.innerHTML = '🎉 Finished! Final score: '+phonScore+' / '+phonOrder.length;
+function dropOnBasket(cat, basketEl){
+  if(r1Selected === null){
+    document.getElementById('r1Feedback').textContent = 'Tap a word first, then tap a basket.';
     return;
   }
-  const item = phonOrder[phonIdx];
-  let html = '<div style="font-size:0.9rem;color:#4a6b7a;margin-bottom:6px;">Which word sounds different?</div>';
-  html += '<div class="words">';
-  item.words.forEach(w=>{
-    html += `<button class="word-btn" onclick="answerPhon(this,'${w.replace(/'/g,"\\'")}')">${w}</button>`;
-  });
-  html += '</div>';
-  q.innerHTML = html;
-}
+  const item = r1Words[r1Selected];
+  const chip = document.querySelector('.chip[data-idx="'+r1Selected+'"]');
+  const correct = item.cat === cat;
+  basketEl.classList.remove('flash-ok','flash-bad');
+  void basketEl.offsetWidth;
+  basketEl.classList.add(correct ? 'flash-ok' : 'flash-bad');
+  setTimeout(()=>basketEl.classList.remove('flash-ok','flash-bad'), 500);
 
-function answerPhon(btn, word){
-  if(phonAnswered) return;
-  phonAnswered = true;
-  const item = phonOrder[phonIdx];
-  const correct = word === item.odd;
-  const fb = document.getElementById('phonFeedback');
-  document.querySelectorAll('.word-btn').forEach(b=>{
-    if(b.textContent === item.odd) b.classList.add('correct');
-  });
   if(correct){
-    phonScore++;
-    fb.textContent = '✅ Correct! Well spotted.';
-    fb.className='phonics-feedback correct';
-  } else {
-    btn.classList.add('incorrect');
-    fb.textContent = '❌ Not quite — "'+item.odd+'" is the odd one out.';
-    fb.className='phonics-feedback incorrect';
-  }
-  document.getElementById('phonScore').textContent = 'Score: '+phonScore;
-  document.getElementById('phonNextBtn').style.display='block';
-}
-
-function nextPhon(){
-  phonIdx++;
-  showPhon();
-}
-initPhon();
-
-/* ================= GAME 3: WORD MEANING MATCH ================= */
-const vocabPairs = [
-  {w:'hobby', m:'an activity done for fun'},
-  {w:'banned', m:'forbidden'},
-  {w:'compound', m:'a group of houses protected by a fence'},
-  {w:'obey', m:'to carry out instructions'},
-  {w:'directly', m:'right in front'},
-  {w:'car spotter', m:'a person who looks out for different cars'}
-];
-let vocabState = {};
-
-function initVocab(){
-  vocabState = {selectedLeft:null, matched:0};
-  document.getElementById('vocabWin').style.display='none';
-  document.getElementById('vocabScore').textContent = '0 / '+vocabPairs.length+' pairs';
-  const left = shuffle(vocabPairs.map(p=>p.w));
-  const right = shuffle(vocabPairs.map(p=>p.m));
-  const leftEl = document.getElementById('vocabLeft');
-  const rightEl = document.getElementById('vocabRight');
-  leftEl.innerHTML=''; rightEl.innerHTML='';
-  left.forEach(w=>{
-    const d = document.createElement('div');
-    d.className='match-item';
-    d.textContent = w;
-    d.dataset.word = w;
-    d.dataset.side='left';
-    d.addEventListener('click', ()=>selectVocab(d));
-    leftEl.appendChild(d);
-  });
-  right.forEach(m=>{
-    const d = document.createElement('div');
-    d.className='match-item';
-    d.textContent = m;
-    d.dataset.word = m;
-    d.dataset.side='right';
-    d.addEventListener('click', ()=>selectVocab(d));
-    rightEl.appendChild(d);
-  });
-}
-
-function pairOfVocab(word){
-  return vocabPairs.find(p=>p.w===word || p.m===word);
-}
-
-function selectVocab(el){
-  if(el.classList.contains('matched')) return;
-  if(el.dataset.side==='left'){
-    document.querySelectorAll('.match-item[data-side="left"]').forEach(i=>i.classList.remove('selected'));
-    el.classList.add('selected');
-    vocabState.selectedLeft = el;
-  } else {
-    if(!vocabState.selectedLeft) return;
-    const leftWord = vocabState.selectedLeft.dataset.word;
-    const rightWord = el.dataset.word;
-    const pair = pairOfVocab(leftWord);
-    if(pair && pair.m === rightWord){
-      vocabState.selectedLeft.classList.remove('selected');
-      vocabState.selectedLeft.classList.add('matched');
-      el.classList.add('matched');
-      vocabState.selectedLeft = null;
-      vocabState.matched++;
-      document.getElementById('vocabScore').textContent = vocabState.matched+' / '+vocabPairs.length+' pairs';
-      if(vocabState.matched === vocabPairs.length){
-        document.getElementById('vocabWin').style.display='block';
-      }
-    } else {
-      el.classList.add('shake');
-      vocabState.selectedLeft.classList.add('shake');
-      setTimeout(()=>{
-        el.classList.remove('shake');
-        vocabState.selectedLeft && vocabState.selectedLeft.classList.remove('shake','selected');
-        vocabState.selectedLeft = null;
-      }, 400);
+    chip.classList.add('used');
+    r1Filled[cat].push(item.w);
+    document.getElementById('basket-'+cat).textContent = r1Filled[cat].join(', ');
+    r1SortedCount++;
+    document.getElementById('r1Count').textContent = r1SortedCount+' / 10 sorted';
+    document.getElementById('r1Feedback').textContent = '\u2713 "'+item.w+'" fits '+labelFor(cat)+'.';
+    registerAnswer(true);
+    r1Selected = null;
+    if(r1SortedCount === r1Words.length){
+      document.getElementById('r1Next').disabled = false;
+      document.getElementById('r1Feedback').textContent = 'All sorted! The word basket is full \u2014 tap Next round.';
     }
+  } else {
+    document.getElementById('r1Feedback').textContent = 'Not quite \u2014 try another basket for "'+item.w+'".';
+    registerAnswer(false);
   }
 }
-initVocab();
+
+function labelFor(cat){
+  return cat === 'sad' ? 'Sad / Upset' : cat === 'calm' ? 'Calm' : 'Happy';
+}
+
+/* ---------------- ROUND 2: sentence sort ---------------- */
+const r2Sentences = [
+  {text:'Mama shouted at the busy market.', ans:'ed'},
+  {text:'The children were laughing at the joke.', ans:'ing'},
+  {text:'Grandmother screamed when she heard the crack.', ans:'ed'},
+  {text:'I was carrying a basket of mangoes when I tripped.', ans:'ing'},
+  {text:'Auntie Fine-Fine cried loudly by the cart.', ans:'ed'},
+  {text:'They were pulling the old cart down the road.', ans:'ing'}
+];
+let r2Answered = 0;
+
+function buildRound2(){
+  const list = document.getElementById('r2List');
+  r2Sentences.forEach((s, i)=>{
+    const card = document.createElement('div');
+    card.className = 'sentence-card';
+    card.innerHTML = `
+      <div class="sentence-text">${i+1}. ${s.text}</div>
+      <div class="choice-row">
+        <button class="choice-btn" data-ans="ed">-ed</button>
+        <button class="choice-btn" data-ans="ing">was / were + -ing</button>
+      </div>
+    `;
+    list.appendChild(card);
+    card.querySelectorAll('.choice-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>answerRound2(btn, card, s.ans));
+    });
+  });
+}
+
+function answerRound2(btn, card, correctAns){
+  const buttons = card.querySelectorAll('.choice-btn');
+  if(buttons[0].disabled) return;
+  const chosen = btn.dataset.ans;
+  buttons.forEach(b=>{
+    b.disabled = true;
+    if(b.dataset.ans === correctAns) b.classList.add('correct');
+  });
+  if(chosen !== correctAns) btn.classList.add('wrong');
+  r2Answered++;
+  document.getElementById('r2Count').textContent = r2Answered+' / 6 answered';
+  registerAnswer(chosen === correctAns);
+  if(r2Answered === r2Sentences.length){
+    document.getElementById('r2Next').disabled = false;
+  }
+}
+
+/* ---------------- ROUND 3: MCQ punctuation ---------------- */
+const r3Questions = [
+  {
+    base: 'how will I sell my yams wailed mama',
+    options: [
+      '"How will I sell my yams?" wailed Mama.',
+      '"how will I sell my yams?" wailed Mama.',
+      '"How will I sell my yams" wailed Mama.',
+      'How will I sell my yams? wailed Mama.'
+    ],
+    correct: 0
+  },
+  {
+    base: 'no sweets said coca-cola',
+    options: [
+      '"No sweets" said coca-cola.',
+      'No sweets, said Coca-Cola.',
+      '"No sweets," said Coca-Cola.',
+      '"no sweets," said Coca-Cola.'
+    ],
+    correct: 2
+  },
+  {
+    base: 'this cart must be fixed shouted mama b',
+    options: [
+      '"This cart must be fixed," shouted mama B.',
+      'This cart must be fixed! shouted Mama B.',
+      '"This cart must be fixed!" Shouted Mama B.',
+      '"This cart must be fixed!" shouted Mama B.'
+    ],
+    correct: 3
+  },
+  {
+    base: 'like a gun firing moaned mama coca-cola',
+    options: [
+      '"like a gun firing," moaned Mama Coca-Cola.',
+      '"Like a gun firing," moaned Mama Coca-Cola.',
+      '"Like a gun firing" moaned Mama Coca-Cola.',
+      '"Like a gun firing," Moaned Mama Coca-Cola.'
+    ],
+    correct: 1
+  }
+];
+let r3Index = 0;
+let r3Answered = 0;
+
+function buildRound3(){
+  renderR3Question();
+}
+
+function renderR3Question(){
+  const q = r3Questions[r3Index];
+  const container = document.getElementById('r3Question');
+  container.innerHTML = `
+    <div class="mcq-prompt">The villagers actually said:</div>
+    <div class="mcq-base">${q.base}</div>
+  `;
+  q.options.forEach((opt, i)=>{
+    const b = document.createElement('button');
+    b.className = 'mcq-option';
+    b.type = 'button';
+    b.textContent = opt;
+    b.addEventListener('click', ()=>answerRound3(b, i, q.correct));
+    container.appendChild(b);
+  });
+  document.getElementById('r3Count').textContent = 'Question '+(r3Index+1)+' of '+r3Questions.length;
+}
+
+function answerRound3(btn, chosenIdx, correctIdx){
+  const opts = document.querySelectorAll('#r3Question .mcq-option');
+  if(opts[0].disabled) return;
+  opts.forEach((o,i)=>{
+    o.disabled = true;
+    if(i === correctIdx) o.classList.add('correct');
+  });
+  if(chosenIdx !== correctIdx) btn.classList.add('wrong');
+  registerAnswer(chosenIdx === correctIdx);
+  r3Answered++;
+
+  setTimeout(()=>{
+    if(r3Index < r3Questions.length - 1){
+      r3Index++;
+      renderR3Question();
+    } else {
+      document.getElementById('r3Next').disabled = false;
+    }
+  }, 900);
+}
+
+/* ---------------- Final screen ---------------- */
+function finishGame(){
+  goTo('final');
+  document.getElementById('finalScore').textContent = score+' / '+TOTAL_QUESTIONS+' loaded';
+  const emojiEl = document.getElementById('finalEmoji');
+  const msgEl = document.getElementById('finalMsg');
+  if(score === TOTAL_QUESTIONS){
+    emojiEl.textContent = '🎉🛒';
+    msgEl.textContent = 'Perfect! The cart is mended and every basket is full. Market day is saved!';
+  } else if(score >= TOTAL_QUESTIONS*0.7){
+    emojiEl.textContent = '🙂🛒';
+    msgEl.textContent = 'Well done! The cart is mostly loaded. A little more practice and it will be perfect.';
+  } else {
+    emojiEl.textContent = '🛠️';
+    msgEl.textContent = 'The cart still needs work. Have another go to fill every basket.';
+  }
+}
+
+function restartGame(){
+  score = 0;
+  updateProgress();
+  document.getElementById('goodsLayer').innerHTML = '';
+  document.getElementById('crackLine').style.opacity = 1;
+
+  // Reset round 1
+  document.getElementById('chipPool').innerHTML = '';
+  ['sad','calm','happy'].forEach(c=>{ r1Filled[c] = []; document.getElementById('basket-'+c).textContent=''; });
+  r1SortedCount = 0; r1Selected = null;
+  document.getElementById('r1Count').textContent = '0 / 10 sorted';
+  document.getElementById('r1Feedback').textContent = '\u00a0';
+  document.getElementById('r1Next').disabled = true;
+  buildRound1();
+
+  // Reset round 2
+  document.getElementById('r2List').innerHTML = '';
+  r2Answered = 0;
+  document.getElementById('r2Count').textContent = '0 / 6 answered';
+  document.getElementById('r2Next').disabled = true;
+  buildRound2();
+
+  // Reset round 3
+  r3Index = 0; r3Answered = 0;
+  document.getElementById('r3Next').disabled = true;
+  buildRound3();
+
+  goTo('intro');
+}
+
+/* ---------------- Init ---------------- */
+buildRound1();
+buildRound2();
+buildRound3();
+updateProgress();
 </script>
 </body>
 </html>
