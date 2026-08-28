@@ -3,260 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catch the Car Thieves! — Past Tense Chase</title>
+<title>Spot the Stolen Cars! — Noun Phrase Game</title>
 <style>
   :root{
-    --navy:#12172b;
-    --navy2:#1c2340;
-    --asphalt:#2b2f3a;
-    --orange:#ef7a1d;
-    --orange-dark:#c9600f;
-    --yellow:#ffc93c;
+    --navy:#0e1630;
+    --navy2:#182552;
+    --dock:#2f3a4d;
+    --orange:#f2811b;
+    --orange-dark:#c96410;
+    --yellow:#ffce54;
     --red:#e0483e;
-    --green:#3fb972;
-    --cream:#fff6ea;
-    --line:#4a5170;
+    --green:#38b06a;
+    --cream:#fff8ec;
+    --line:#4a5482;
   }
   *{box-sizing:border-box;}
   html,body{
-    margin:0; padding:0; height:100%;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 55%, var(--asphalt) 100%);
+    margin:0; padding:0; min-height:100%;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 60%, var(--dock) 100%);
     color:var(--cream);
-    overflow-x:hidden;
   }
   .wrap{
-    max-width:720px;
-    margin:0 auto;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+    max-width:740px; margin:0 auto;
+    display:flex; flex-direction:column; align-items:center;
     padding:18px 16px 40px;
   }
   h1{
-    font-size:clamp(22px,5vw,32px);
-    margin:6px 0 2px;
-    text-align:center;
-    letter-spacing:0.5px;
-    color:var(--yellow);
-    text-shadow: 2px 2px 0 rgba(0,0,0,0.35);
+    font-size:clamp(21px,5vw,30px);
+    margin:4px 0 2px; text-align:center; color:var(--yellow);
+    text-shadow:2px 2px 0 rgba(0,0,0,0.35);
   }
-  .subtitle{
-    color:#c9cee0;
-    font-size:14px;
-    margin-bottom:14px;
-    text-align:center;
-  }
+  .subtitle{ color:#cfd4ea; font-size:14px; margin-bottom:14px; text-align:center; }
 
-  /* --- HUD --- */
   .hud{
-    width:100%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:rgba(255,255,255,0.06);
-    border:2px solid var(--line);
-    border-radius:14px;
-    padding:10px 16px;
-    margin-bottom:16px;
-    font-weight:600;
+    width:100%; display:flex; justify-content:space-between; align-items:center;
+    background:rgba(255,255,255,0.06); border:2px solid var(--line); border-radius:14px;
+    padding:10px 16px; margin-bottom:14px; font-weight:600;
   }
-  .hud div{display:flex; align-items:center; gap:6px; font-size:14px;}
-  .hud .lives{color:var(--red); font-size:18px; letter-spacing:2px;}
-  .hud .score{color:var(--yellow);}
-  .hud .streak{color:var(--green);}
+  .hud div{ font-size:14px; }
+  .hud .score{ color:var(--yellow); }
+  .hud .streak{ color:var(--green); }
+  .hud .lives{ color:var(--red); font-size:18px; letter-spacing:2px; }
 
-  /* --- Road scene --- */
+  .progress-bar{ width:100%; height:8px; background:rgba(255,255,255,0.15); border-radius:6px; overflow:hidden; margin-bottom:16px; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg,var(--orange),var(--yellow)); width:0%; transition:width .4s ease; }
+
+  /* Port scene */
   .scene{
-    position:relative;
-    width:100%;
-    height:150px;
-    border-radius:16px;
-    overflow:hidden;
-    margin-bottom:18px;
-    background:
-      linear-gradient(180deg,#8fb8e8 0%, #cfe4f7 45%, #45505f 45%, #3a4451 100%);
-    border:3px solid #10131f;
+    position:relative; width:100%; height:130px; border-radius:16px; overflow:hidden;
+    margin-bottom:18px; border:3px solid #0a0e1c;
+    background: linear-gradient(180deg,#4b6fa0 0%, #7fa3cc 40%, #33404f 40%, #232d38 100%);
   }
-  .buildings{
-    position:absolute; top:0; left:0; right:0; height:45%;
-    background-repeat:repeat-x; background-size:auto 100%;
-    opacity:0.55;
+  .ship{
+    position:absolute; bottom:14px; font-size:52px;
+    filter:drop-shadow(2px 3px 3px rgba(0,0,0,0.4));
   }
-  .buildings span{
-    position:absolute; bottom:0; width:26px;
-    background:#3d4a63;
+  .ship1{ left:6%; }
+  .ship2{ left:38%; font-size:44px; opacity:0.85;}
+  .ship3{ right:6%; font-size:46px; opacity:0.9;}
+  .car-icon{
+    position:absolute; bottom:8px; font-size:26px;
+    transition: opacity 0.3s ease;
   }
-  .road-line{
-    position:absolute; bottom:22px; left:0; right:0; height:6px;
-    background: repeating-linear-gradient(90deg, var(--yellow) 0 26px, transparent 26px 52px);
-    animation: dash 0.5s linear infinite;
-  }
-  @keyframes dash{ from{ background-position-x:0;} to{ background-position-x:-52px;} }
-
-  .car{
-    position:absolute;
-    bottom:26px;
-    font-size:40px;
-    transition: left 0.35s ease-out;
-    filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.4));
-  }
-  .thief-car{ left:6%; }
-  .police-car{ right:6%; transform:scaleX(-1); }
-
   .status-msg{
     position:absolute; top:8px; left:50%; transform:translateX(-50%);
-    background:rgba(0,0,0,0.55);
-    padding:4px 12px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:700;
-    color:var(--yellow);
-    white-space:nowrap;
+    background:rgba(0,0,0,0.55); padding:4px 12px; border-radius:20px;
+    font-size:12px; font-weight:700; color:var(--yellow); white-space:nowrap;
   }
 
-  /* --- Question card --- */
+  /* card */
   .card{
-    width:100%;
-    background: var(--cream);
-    color:#25293a;
-    border-radius:18px;
-    padding:22px 20px 18px;
-    box-shadow: 0 10px 0 rgba(0,0,0,0.25);
-    position:relative;
+    width:100%; background:var(--cream); color:#26293a; border-radius:18px;
+    padding:22px 20px 18px; box-shadow:0 10px 0 rgba(0,0,0,0.25); position:relative;
   }
   .prompt-label{
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    color:var(--orange-dark);
-    margin-bottom:6px;
+    font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--orange-dark); margin-bottom:8px;
   }
-  .prompt{
-    font-size:clamp(20px,5.5vw,26px);
-    font-weight:800;
-    margin-bottom:4px;
-    line-height:1.25;
+  .task-desc{ font-size:14px; color:#5a5f74; margin-bottom:14px; }
+  .phrase-build-row{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:16px;
   }
-  .prompt .verb{
-    color:var(--orange-dark);
-    border-bottom:3px dashed var(--orange);
-    padding-bottom:1px;
+  .slot{
+    min-width:88px; min-height:46px; border:3px dashed #cfd3e0; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px;
+    background:#f2f4fa; padding:4px 8px; color:#26293a;
   }
-  .sentence-hint{
-    font-size:14px;
-    color:#5a5f74;
-    margin-bottom:16px;
-    font-style:italic;
+  .slot.filled{ border-style:solid; border-color:var(--orange); background:#fff2e0; }
+  .word-bank{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px;
   }
-  .options{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:10px;
+  .word-chip{
+    background:white; border:3px solid #dcdfe8; border-radius:24px; padding:9px 16px;
+    font-weight:700; font-size:15px; cursor:pointer; transition:all .15s ease; color:#26293a;
   }
-  @media (max-width:420px){
-    .options{grid-template-columns: 1fr;}
-  }
+  .word-chip:hover:not(.used){ border-color:var(--orange); transform:translateY(-2px); }
+  .word-chip.used{ opacity:0.3; cursor:default; }
+  .word-chip.adj{ color:var(--orange-dark); }
+  .word-chip.noun{ color:#1b6fa8; }
+
+  .mc-question{ font-size:clamp(18px,5vw,22px); font-weight:800; margin-bottom:14px; line-height:1.3; }
+  .mc-question .hl{ color:var(--orange-dark); }
+  .options{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:420px){ .options{ grid-template-columns:1fr; } }
   .opt{
-    background:white;
-    border:3px solid #dcdfe8;
-    border-radius:12px;
-    padding:14px 10px;
-    font-size:17px;
-    font-weight:700;
-    cursor:pointer;
-    color:#25293a;
-    transition: all 0.15s ease;
+    background:white; border:3px solid #dcdfe8; border-radius:12px; padding:13px 10px;
+    font-size:15.5px; font-weight:700; cursor:pointer; color:#26293a; transition:all .15s ease;
   }
-  .opt:hover:not(:disabled){
-    border-color:var(--orange);
-    transform:translateY(-2px);
-  }
+  .opt:hover:not(:disabled){ border-color:var(--orange); transform:translateY(-2px); }
   .opt:disabled{ cursor:default; }
   .opt.correct{ background:var(--green); border-color:var(--green); color:white; }
   .opt.wrong{ background:var(--red); border-color:var(--red); color:white; }
 
-  .feedback{
-    min-height:24px;
-    margin-top:12px;
-    font-weight:700;
-    font-size:14px;
-    text-align:center;
-  }
+  .feedback{ min-height:24px; margin-top:10px; font-weight:700; font-size:14px; text-align:center; }
   .feedback.good{ color:#1b8a4f; }
   .feedback.bad{ color:#c23a30; }
 
-  .next-btn{
-    display:block;
-    margin:14px auto 0;
-    background:var(--orange);
-    color:white;
-    border:none;
-    border-radius:30px;
-    padding:10px 26px;
-    font-size:15px;
-    font-weight:800;
-    cursor:pointer;
+  .action-btn{
+    display:block; margin:14px auto 0; background:var(--orange); color:white; border:none;
+    border-radius:30px; padding:10px 26px; font-size:15px; font-weight:800; cursor:pointer;
     box-shadow:0 4px 0 var(--orange-dark);
   }
-  .next-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 var(--orange-dark); }
+  .action-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 var(--orange-dark); }
+  .action-btn:disabled{ opacity:0.4; cursor:default; }
 
-  /* --- Game over screen --- */
   .end-screen{
-    width:100%;
-    background:var(--cream);
-    color:#25293a;
-    border-radius:18px;
-    padding:34px 22px;
-    text-align:center;
-    box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+    width:100%; background:var(--cream); color:#26293a; border-radius:18px; padding:34px 22px;
+    text-align:center; box-shadow:0 10px 0 rgba(0,0,0,0.25);
   }
-  .end-screen h2{ margin-top:0; font-size:26px; color:var(--orange-dark); }
+  .end-screen h2{ margin-top:0; font-size:24px; color:var(--orange-dark); }
   .end-emoji{ font-size:56px; margin-bottom:6px; }
   .end-stats{ font-size:16px; margin:14px 0 20px; line-height:1.7; }
   .end-stats b{ color:var(--orange-dark); }
   .restart-btn{
-    background:var(--navy);
-    color:var(--yellow);
-    border:none;
-    border-radius:30px;
-    padding:12px 30px;
-    font-size:15px;
-    font-weight:800;
-    cursor:pointer;
-    box-shadow:0 4px 0 #000;
+    background:var(--navy); color:var(--yellow); border:none; border-radius:30px;
+    padding:12px 30px; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 0 #000;
   }
   .restart-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 #000; }
 
-  .progress-bar{
-    width:100%;
-    height:8px;
-    background:rgba(255,255,255,0.15);
-    border-radius:6px;
-    overflow:hidden;
-    margin-bottom:14px;
-  }
-  .progress-fill{
-    height:100%;
-    background: linear-gradient(90deg, var(--orange), var(--yellow));
-    width:0%;
-    transition: width 0.4s ease;
-  }
-
-  footer{
-    margin-top:22px;
-    font-size:12px;
-    color:#8890ab;
-    text-align:center;
-  }
+  footer{ margin-top:22px; font-size:12px; color:#8890ab; text-align:center; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🚓 Catch the Car Thieves!</h1>
-  <div class="subtitle">Choose the correct <b>past tense</b> verb to close the gap before No.&nbsp;1 loses the Firebird.</div>
+  <h1>🚨 Spot the Stolen Cars!</h1>
+  <div class="subtitle">Help No. 1 build noun phrases and spot the getaway cars before the ship sails.</div>
 
   <div class="hud">
     <div class="score">⭐ Score: <span id="scoreVal">0</span></div>
@@ -267,70 +159,50 @@
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
   <div class="scene">
-    <div class="buildings" id="buildings"></div>
-    <div class="road-line"></div>
-    <div class="status-msg" id="statusMsg">Chase is on!</div>
-    <div class="car thief-car" id="thiefCar" style="left:8%">🚗</div>
-    <div class="car police-car" id="policeCar" style="right:70%">🚓</div>
+    <div class="status-msg" id="statusMsg">Watching the port...</div>
+    <div class="ship ship2">🚢</div>
+    <div class="ship ship1">🛳️</div>
+    <div class="ship ship3">🚢</div>
+    <div class="car-icon" id="spottedCar" style="left:45%; opacity:0;">🚗</div>
   </div>
 
   <div id="gameArea"></div>
 
-  <footer>Based on "No. 1 is Stolen" — Unit 1: Fiction, irregular past tense practice.</footer>
+  <footer>Based on "No. 1 and the Police Chief" — Unit 1: Fiction, noun phrase practice.</footer>
 </div>
 
 <script>
-// ---------------- Verb data (drawn from the lesson) ----------------
-const verbs = [
-  {present:"says", past:"said"},
-  {present:"write", past:"wrote"},
-  {present:"thinks", past:"thought"},
-  {present:"fight", past:"fought"},
-  {present:"becomes", past:"became"},
-  {present:"goes", past:"went"},
-  {present:"drive", past:"drove"},
-  {present:"buy", past:"bought"},
-  {present:"teaches", past:"taught"},
-  {present:"spills", past:"spilt"},
-  {present:"speaks", past:"spoke"},
-  {present:"catch", past:"caught"},
-  {present:"take", past:"took"},
-  {present:"hear", past:"heard"},
-  {present:"am", past:"was"},
-  {present:"are", past:"were"},
-  {present:"bring", past:"brought"},
-  {present:"kneel", past:"knelt"}
+// ---------- Round data ----------
+// type "build": drag/click words in order (adjective[, adjective], noun) to build a phrase matching the target meaning
+// type "mc": pick the correct noun phrase / adjective+noun combo for a description
+
+const rounds = [
+  { type:"build", target:"a car that has been stolen", adjOptions:["stolen","rusty","tiny"], noun:"cars", correctAdjs:["stolen"] },
+  { type:"build", target:"a ship that is big and orange", adjOptions:["orange","big","quiet"], noun:"ship", correctAdjs:["big","orange"] },
+  { type:"build", target:"a Firebird that is red", adjOptions:["red","broken","sleepy"], noun:"Firebird", correctAdjs:["red"] },
+  { type:"build", target:"a lorry that is broken", adjOptions:["broken","yellow","loud"], noun:"lorry", correctAdjs:["broken"] },
+  { type:"mc", question:"Which is a correct noun phrase describing a car in the story?",
+    options:["stolen cars","cars stolen the","the of cars stolen"], correct:"stolen cars" },
+  { type:"mc", question:"Which noun phrase has TWO adjectives?",
+    options:["big orange ship","fast car","the ship"], correct:"big orange ship" },
+  { type:"mc", question:"In 'a yellow Porsche 911', which word is the noun (the main thing being described)?",
+    options:["Porsche 911","yellow","a"], correct:"Porsche 911" },
+  { type:"mc", question:"Which word tells you the police are trying to stay hidden?",
+    options:["crouching","shouting","driving"], correct:"crouching" },
+  { type:"mc", question:"Which word means 'stops for a moment because he is not sure'?",
+    options:["hesitates","scatter","squats"], correct:"hesitates" },
+  { type:"mc", question:"This story has clues, a crime and a chief who solves it. What genre is it?",
+    options:["detective / mystery","myth","fantasy"], correct:"detective / mystery" }
 ];
 
-const sentenceTemplates = {
-  said:"'Tonight,' ___ the first man.",
-  wrote:"Prof ___ a letter to No. 1's grandfather.",
-  thought:"No. 1 ___ about the thieves all night.",
-  fought:"The two men ___ over who should drive.",
-  became:"The sky ___ dark as the Firebird drove away.",
-  went:"Prof ___ into Pizza Hut to buy dinner.",
-  drove:"The thief ___ off before No. 1 could shout.",
-  bought:"Prof ___ pizza for the two of them.",
-  taught:"Grandfather ___ No. 1 how to stay calm.",
-  spilt:"The papers ___ under the seat.",
-  spoke:"A voice ___ from the passenger seat.",
-  caught:"It is the thieves who ___ No. 1, not the other way round.",
-  took:"The thieves ___ the Firebird and drove into the night.",
-  heard:"No. 1 ___ two men getting into the car.",
-  was:"No. 1 ___ stiff, like firewood, on the floor of the car.",
-  were:"There ___ two men in the car, and neither was Prof.",
-  brought:"Prof ___ pizza back to share with No. 1.",
-  knelt:"No. 1 ___ down to reach the papers."
-};
-
-let deck = [];
-let current = null;
+let order = [];
+let idx = 0;
 let score = 0;
 let streak = 0;
 let lives = 3;
-let questionIndex = 0;
-const TOTAL_Q = 10;
+const TOTAL = rounds.length;
 let answered = false;
+let buildState = { adjs:[], allAdjs:[] };
 
 const gameArea = document.getElementById('gameArea');
 const scoreVal = document.getElementById('scoreVal');
@@ -338,130 +210,174 @@ const streakVal = document.getElementById('streakVal');
 const livesVal = document.getElementById('livesVal');
 const progressFill = document.getElementById('progressFill');
 const statusMsg = document.getElementById('statusMsg');
-const thiefCar = document.getElementById('thiefCar');
-const policeCar = document.getElementById('policeCar');
-const buildingsWrap = document.getElementById('buildings');
+const spottedCar = document.getElementById('spottedCar');
 
 function shuffle(arr){
   const a = arr.slice();
   for(let i=a.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
+    [a[i],a[j]]=[a[j],a[i]];
   }
   return a;
-}
-
-function buildBuildings(){
-  buildingsWrap.innerHTML = '';
-  let x = 0;
-  while(x < 900){
-    const w = 18 + Math.random()*20;
-    const h = 30 + Math.random()*65;
-    const b = document.createElement('span');
-    b.style.left = x+'px';
-    b.style.width = w+'px';
-    b.style.height = h+'%';
-    buildingsWrap.appendChild(b);
-    x += w + 8;
-  }
-}
-
-function newDeck(){
-  deck = shuffle(verbs).slice(0, TOTAL_Q);
 }
 
 function updateHud(){
   scoreVal.textContent = score;
   streakVal.textContent = streak;
   livesVal.textContent = '❤'.repeat(lives) + '🖤'.repeat(3-lives);
-  progressFill.style.width = (questionIndex/TOTAL_Q*100)+'%';
+  progressFill.style.width = (idx/TOTAL*100)+'%';
 }
 
-function updateCars(){
-  // thief car starts far ahead (right), police starts far back (left)
-  // gap closes as score increases relative to total
-  const progress = Math.min(questionIndex / TOTAL_Q, 1);
-  const thiefLeft = 8 + progress*55; // moves right slowly (getting caught = gap closes)
-  const policeRight = 70 - progress*62;
-  thiefCar.style.left = thiefLeft + '%';
-  policeCar.style.right = Math.max(policeRight, 6) + '%';
+function flashCar(found){
+  spottedCar.style.opacity = found ? '1' : '0';
+  spottedCar.textContent = found ? '🚔' : '🚗';
+  spottedCar.style.left = (20 + Math.random()*55) + '%';
+  if(found){
+    setTimeout(()=>{ spottedCar.style.opacity='0'; }, 900);
+  }
 }
 
-function pickOptions(correctPast){
-  const distractors = shuffle(verbs.map(v=>v.past).filter(p => p !== correctPast));
-  const opts = shuffle([correctPast, distractors[0], distractors[1], distractors[2]]);
-  return opts;
-}
-
-function loadQuestion(){
-  if(questionIndex >= TOTAL_Q || lives <= 0){
+function loadRound(){
+  if(idx >= TOTAL || lives <= 0){
     endGame();
     return;
   }
   answered = false;
-  current = deck[questionIndex];
-  const sentence = sentenceTemplates[current.past] || `Yesterday, No. 1 ___ (${current.present}).`;
-  const options = pickOptions(current.past);
+  const r = rounds[idx];
+  statusMsg.textContent = `Round ${idx+1} of ${TOTAL}`;
 
-  statusMsg.textContent = `Question ${questionIndex+1} of ${TOTAL_Q}`;
+  if(r.type === "build"){
+    buildState = { adjs: [], allAdjs: shuffle(r.adjOptions) };
+    renderBuildRound(r);
+  } else {
+    renderMCRound(r);
+  }
+  updateHud();
+}
 
+function renderBuildRound(r){
+  const needed = r.correctAdjs.length;
   gameArea.innerHTML = `
     <div class="card">
-      <div class="prompt-label">Choose the past tense</div>
-      <div class="prompt">Present: <span class="verb">${current.present}</span></div>
-      <div class="sentence-hint">${sentence.replace('___','______')}</div>
-      <div class="options" id="optionsWrap">
-        ${options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join('')}
+      <div class="prompt-label">Build the noun phrase</div>
+      <div class="task-desc">Tap the adjective(s) that describe: <b>${r.target}</b>. Then tap Check.</div>
+      <div class="phrase-build-row" id="slotsRow">
+        ${Array.from({length:needed}).map(()=>`<div class="slot"></div>`).join('')}
+        <div class="slot filled" style="background:#e9edf5;border-style:solid;border-color:#c7ccd9;">${r.noun}</div>
       </div>
+      <div class="word-bank" id="wordBank">
+        ${buildState.allAdjs.map(a=>`<button class="word-chip adj" data-adj="${a}">${a}</button>`).join('')}
+      </div>
+      <button class="action-btn" id="checkBtn">Check phrase</button>
       <div class="feedback" id="feedback"></div>
     </div>
   `;
 
-  document.querySelectorAll('.opt').forEach(btn=>{
-    btn.addEventListener('click', onAnswer);
+  document.querySelectorAll('.word-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      if(chip.classList.contains('used')) return;
+      if(buildState.adjs.length >= r.correctAdjs.length) return;
+      buildState.adjs.push(chip.getAttribute('data-adj'));
+      chip.classList.add('used');
+      renderSlots(r);
+    });
   });
-
-  updateHud();
-  updateCars();
+  document.getElementById('checkBtn').addEventListener('click', ()=>checkBuild(r));
 }
 
-function onAnswer(e){
+function renderSlots(r){
+  const slots = document.querySelectorAll('#slotsRow .slot');
+  buildState.adjs.forEach((a,i)=>{
+    if(slots[i]){
+      slots[i].textContent = a;
+      slots[i].classList.add('filled');
+    }
+  });
+}
+
+function checkBuild(r){
+  if(answered) return;
+  if(buildState.adjs.length < r.correctAdjs.length){
+    document.getElementById('feedback').textContent = "Choose the right number of adjectives first!";
+    document.getElementById('feedback').className = 'feedback bad';
+    return;
+  }
+  answered = true;
+  const chosenSet = new Set(buildState.adjs);
+  const correctSet = new Set(r.correctAdjs);
+  const isCorrect = chosenSet.size === correctSet.size && [...chosenSet].every(a => correctSet.has(a));
+  const feedback = document.getElementById('feedback');
+  document.getElementById('checkBtn').disabled = true;
+
+  if(isCorrect){
+    score += 10 + streak*2;
+    streak += 1;
+    feedback.textContent = `🚔 Spotted! "${r.correctAdjs.join(' ')} ${r.noun}" is correct.`;
+    feedback.className = 'feedback good';
+    flashCar(true);
+  } else {
+    streak = 0;
+    lives -= 1;
+    feedback.textContent = `Not quite — the phrase should be "${r.correctAdjs.join(' ')} ${r.noun}".`;
+    feedback.className = 'feedback bad';
+    flashCar(false);
+  }
+  finishRound();
+}
+
+function renderMCRound(r){
+  const opts = shuffle(r.options);
+  gameArea.innerHTML = `
+    <div class="card">
+      <div class="prompt-label">Spot the answer</div>
+      <div class="mc-question">${r.question}</div>
+      <div class="options" id="optionsWrap">
+        ${opts.map(o=>`<button class="opt" data-val="${o.replace(/"/g,'&quot;')}">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  `;
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', (e)=>onMCAnswer(e, r));
+  });
+}
+
+function onMCAnswer(e, r){
   if(answered) return;
   answered = true;
   const chosen = e.target.getAttribute('data-val');
-  const correct = current.past;
+  const correct = r.correct;
   const feedback = document.getElementById('feedback');
   document.querySelectorAll('.opt').forEach(btn=>{
     btn.disabled = true;
-    if(btn.getAttribute('data-val') === correct){
-      btn.classList.add('correct');
-    } else if(btn === e.target){
-      btn.classList.add('wrong');
-    }
+    if(btn.getAttribute('data-val') === correct) btn.classList.add('correct');
+    else if(btn === e.target) btn.classList.add('wrong');
   });
 
   if(chosen === correct){
     score += 10 + streak*2;
     streak += 1;
-    feedback.textContent = "🚓 Nice! You closed in on the thieves.";
+    feedback.textContent = "🚔 Spotted! That's the one.";
     feedback.className = 'feedback good';
-    statusMsg.textContent = "Gaining on them!";
+    flashCar(true);
   } else {
     streak = 0;
     lives -= 1;
-    feedback.textContent = `Not quite — the past tense of "${current.present}" is "${correct}".`;
+    feedback.textContent = `Not quite — the answer was "${correct}".`;
     feedback.className = 'feedback bad';
-    statusMsg.textContent = "They're getting away!";
+    flashCar(false);
   }
+  finishRound();
+}
 
-  questionIndex += 1;
+function finishRound(){
+  idx += 1;
   updateHud();
-  updateCars();
-
+  statusMsg.textContent = lives > 0 ? "Keep watching..." : "Losing them!";
   const nextBtn = document.createElement('button');
-  nextBtn.className = 'next-btn';
-  nextBtn.textContent = (questionIndex >= TOTAL_Q || lives <= 0) ? 'See results' : 'Next question ➜';
-  nextBtn.addEventListener('click', loadQuestion);
+  nextBtn.className = 'action-btn';
+  nextBtn.textContent = (idx >= TOTAL || lives <= 0) ? 'See results' : 'Next round ➜';
+  nextBtn.addEventListener('click', loadRound);
   document.querySelector('.card').appendChild(nextBtn);
 }
 
@@ -469,28 +385,24 @@ function endGame(){
   const won = lives > 0;
   gameArea.innerHTML = `
     <div class="end-screen">
-      <div class="end-emoji">${won ? '🏆' : '💨'}</div>
-      <h2>${won ? 'Case Closed — No. 1 caught the thieves!' : 'The Firebird got away...'}</h2>
+      <div class="end-emoji">${won ? '🏆' : '🚢'}</div>
+      <h2>${won ? 'HANDS UP! You caught the car thieves!' : 'The ship sailed away...'}</h2>
       <div class="end-stats">
         Final score: <b>${score}</b><br>
-        Questions answered: <b>${questionIndex} / ${TOTAL_Q}</b><br>
+        Rounds completed: <b>${idx} / ${TOTAL}</b><br>
         Lives remaining: <b>${lives}</b>
       </div>
       <button class="restart-btn" id="restartBtn">Play again</button>
     </div>
   `;
-  statusMsg.textContent = won ? "Thieves caught!" : "Getaway complete";
+  statusMsg.textContent = won ? "Case closed!" : "Ship departed";
   document.getElementById('restartBtn').addEventListener('click', startGame);
 }
 
 function startGame(){
-  score = 0;
-  streak = 0;
-  lives = 3;
-  questionIndex = 0;
-  newDeck();
-  buildBuildings();
-  loadQuestion();
+  score = 0; streak = 0; lives = 3; idx = 0;
+  spottedCar.style.opacity = '0';
+  loadRound();
 }
 
 startGame();
